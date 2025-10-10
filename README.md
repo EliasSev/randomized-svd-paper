@@ -1,0 +1,5 @@
+# Randomized Singular Value Paper
+Repo for files and code for "On the Accuracy of Randomized Low-Rank Matrix Approximation" conference paper in the DAT390 course at the Norwegian University of Life Sciences (NMBU).
+
+### Abstract
+Low-rank matrix approximations are essential in modern applications like scientific computing and data analysis. In recent years the volume of data has seen a rapid increase, resulting in a need for efficient and accurate low-rank approximations. The computation of the singular value decomposition (SVD) is fundamental within low-rank approximations, but is computationally infeasible as the data size increases. Randomized SVD (rSVD) provides an efficient solution using randomized algorithms to approximate the SVD by first projecting the data onto a low-dimensional space before performing the SVD, significantly reducing the computation time. In this paper I will analyze the computation time and error of rSVD, comparing it with theoretical results and with the SVD.

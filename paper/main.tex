@@ -1,0 +1,134 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\graphicspath{{../figures/}}
+\def\BibTeX{
+    {\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}
+}
+
+\begin{document}
+
+\title{On the Accuracy of Randomized Low-Rank Matrix Approximations}
+
+\author{
+    \IEEEauthorblockN{
+    Elias J. Severinsen\IEEEauthorrefmark{1},
+    Ole L. Elvetun\IEEEauthorrefmark{2}}
+    \IEEEauthorblockA{
+    \textit{Department of Mathematics} \\
+    \textit{Norwegian University of Life Sciences (NMBU)} \\
+    Ås, Norway \\
+    \{elias.jegervatn.severinsen, ole.elvetun\}@nmbu.no}
+}
+
+\maketitle
+
+\begin{abstract}
+Low-rank matrix approximations are essential in modern applications like scientific computing and data analysis. In recent years the volume of data has seen a rapid increase, resulting in a need for efficient and accurate low-rank approximations. The computation of the singular value decomposition (SVD) is fundamental within low-rank approximations, but is computationally infeasible as the data size increases. Randomized SVD (rSVD) provides an efficient solution using randomized algorithms to approximate the SVD by first projecting the data onto a low-dimensional space before performing the SVD, significantly reducing the computation time. In this paper I will analyze the computation time and error of rSVD, comparing it with theoretical results and with the SVD.
+\end{abstract}
+
+\section{Introduction}
+This is the introduction.
+
+\section{Theory}\label{TH}
+
+\subsection{Problem formulation}
+Consider the goal of finding a $k$-rank approximation to $A$. We are seeking a matrix $X$ with $\text{rank}(X) \le k$ which approximates $A$. The problem formulation is
+$$
+\min_{\text{rank}(X)\le k} \|A - X \|_2
+$$
+where $\| \cdot \|$ is the $\ell_2$ operator norm. Equivalently, every rank-$k$ matrix can be viewed as the projection of $A$ onto a $k$-dimensional subspace of $\mathbb R^m$. 
+
+Let $Q\in\mathbb R^{m\times k}$ have orthonormal columns. Then $QQ^TA$ is the orthogonal projection of $A$ onto the $k$-dimensional subspace $\text{span}(Q)$. The problem can also be formulated as
+$$
+\min_{Q^TQ=I_k} \|A-QQ^TA \|_2
+$$
+
+\subsection{The singular value decomposition}
+Info about SVD here. The Eckart–Young–Mirsky theorem tells us that choosing the $k$ first left singular vectors of  gives the optimal solution for all possible $Q$ (reference).
+
+\subsection{The randomized SVD}
+Randomized singular value decomposition (rSVD) is a technique used to approximate the $k$-rank approximation of an $m\times n$ matrix  without computing the SVD. The core idea is to use random sampling of  to find a low-rank matrix $Q$ which approximates the range of $A$.
+
+Halko et al proposed the Proto-Algorithm for computing the rSVD. Pick a target rank $k$ and an oversampling parameter $p$ and draw a $m\times (k+p)$ random test matrix $\Omega$. 
+
+Next, let
+$$
+Y = A\Omega
+$$
+will with a high probability span the dominant subspace of $A$ (reference). Then, compute the orthogonal basis $Q$ of $Y$, and form the projection $B = Q^TA$. We can now compute the SVD of $B$,
+$$
+B = \tilde U\Sigma V^T
+$$
+Since $A \approx QQ^TA = QB = Q\tilde U\Sigma V^T$, letting $U = Q\tilde U$ gives the low-rank approximation $A \approx U\Sigma V^T$.
+
+\section{Results}\label{RE}
+This section contains results.
+
+\subsection{Singular value decomposition}
+Results on SVD.
+
+\subsection{Randomized SVD}
+Results on rSVD,
+
+\begin{equation}\label{rSVD}
+A \approx (Q\tilde{U})\Sigma V^T = U\Sigma V^T
+\end{equation}
+
+Reference to \eqref{rSVD}.
+
+\subsection{Error estimates}
+On errors related to SVD and rSVD.
+
+\begin{equation}
+E\|A - QQ^T A\| \le
+\left[ 1 + \frac{4 \sqrt{k+p}}{p-1} \sqrt{\min\{m,n\}} \right]
+\sigma_{k+1}
+\end{equation}
+
+This is an upper bound on the error in rSVD, see \cite{halko_finding_2011}.
+
+\section{Discussion}\label{DI}
+This section contains discussion.
+
+\section{Conclusion}\label{CO}
+This section contains the conclusion.
+
+\section*{Acknowledgment}
+Tips: Avoid the stilted expression ``one of us (R. B. 
+G.) thanks $\ldots$''. Instead, try ``R. B. G. thanks$\ldots$''. Put sponsor 
+acknowledgments in the unnumbered footnote on the first page.
+
+\bibliographystyle{plain}  % or 'unsrt', 'alpha', 'ieeetr', etc.
+\bibliography{references}
+
+\section*{Appendix}
+\paragraph{Matrix norms}\label{MatrixNorms}
+The $\ell_2$ norm of $A\in\mathbb A^{m\times n}$ is given by
+$\|A\|_2 = \sup_{\|x\|=1} \|Ax\|$ and the Frobenius norm is given by
+\begin{equation*}
+\|A\|_F = \sqrt{\sum_{i=1}^m\sum_{j=1}^n|a_{ij}|^2}
+\end{equation*}
+
+\paragraph{QR factorization}\label{QRFact}
+The QR factorization of $A\in\mathbb R^{m\times b}$ is a decomposition $A = QR$, where $Q\in\mathbb R^{m\times n}$ has orthonormal columns and $R\in\mathbb R^{n\times n}$ is upper diagonal.
+
+\paragraph{Fundamental subspaces}
+Place figures and tables at the top and bottom of columns. Avoid placing them in the middle of columns. Figure captions should be 
+below the figures. Insert figures and tables after they are cited in the text. Use the abbreviation 
+``Fig.~\ref{fig}'', even at the beginning of a sentence.
+\begin{figure}[htbp]
+\centerline{\includegraphics[width=0.4\textwidth]{foursubspaces.jpg}}
+\caption{The four fundamental subspaces of linear algebra.}
+\label{fig}
+\end{figure}
+
+
+\end{document}
