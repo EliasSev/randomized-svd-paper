@@ -41,18 +41,24 @@ This is the introduction.
 
 \subsection{Problem formulation}
 Consider the goal of finding a $k$-rank approximation to $A$. We are seeking a matrix $X$ with $\text{rank}(X) \le k$ which approximates $A$. The problem formulation is
-$$
+\begin{equation}\label{probForm1}
 \min_{\text{rank}(X)\le k} \|A - X \|_2
-$$
+\end{equation}
 where $\| \cdot \|$ is the $\ell_2$ operator norm. Equivalently, every rank-$k$ matrix can be viewed as the projection of $A$ onto a $k$-dimensional subspace of $\mathbb R^m$. 
 
 Let $Q\in\mathbb R^{m\times k}$ have orthonormal columns. Then $QQ^TA$ is the orthogonal projection of $A$ onto the $k$-dimensional subspace $\text{span}(Q)$. The problem can also be formulated as
-$$
-\min_{Q^TQ=I_k} \|A-QQ^TA \|_2
-$$
+\begin{equation}\label{probForm2}
+\min_{Q^TQ=I_k} \|A-QQ^TA \|_2 
+\end{equation}
 
 \subsection{The singular value decomposition}
-Info about SVD here. The Eckart–Young–Mirsky theorem tells us that choosing the $k$ first left singular vectors of  gives the optimal solution for all possible $Q$ (reference).
+The singular value decomposition of a matrix $A\in\mathbb R^{m\times n}$ is a factorization of the form
+$$
+A = U\Sigma V^T
+$$
+where $U$ is an $m \times m$ orthogonal matrix, $\Sigma$ is an $m\times n$ diagonal matrix with non-negative values, called the singular values of $A$, along its diagonal, and $V$ is an $n \times n$ orthogonal matrix. Every matrix has such a factorization, where $\Sigma$ is uniquely determined, but $U$ and $V$ are not \cite{lay_linear_2022}. The columns of $U$ and $V$ are called the left and right singular vectors of $A$, respectively. 
+
+In a 1936 paper, C. Eckart and G. Young showed that the solution to \eqref{probForm1} is $X = U_k\Sigma_k V_k^T$, where $U_k$ and $V_k$ consists of the $k$ first left and right singular vectors of $A$, respectively, and $\Sigma_k$ the $k$ first singular values of $A$ \cite{eckart_approximation_1936}. This is now known as the Eckart–Young–Mirsky theorem. Alternatively, the solution $Q$ of \eqref{probForm2} consists of the $k$ first left singular values of $A$.
 
 \subsection{The randomized SVD}
 Randomized singular value decomposition (rSVD) is a technique used to approximate the $k$-rank approximation of an $m\times n$ matrix  without computing the SVD. The core idea is to use random sampling of  to find a low-rank matrix $Q$ which approximates the range of $A$.
@@ -85,6 +91,13 @@ A \approx (Q\tilde{U})\Sigma V^T = U\Sigma V^T
 Reference to \eqref{rSVD}.
 
 \subsection{Error estimates}
+
+\begin{figure}[htbp]
+\centerline{\includegraphics[width=0.5\textwidth]{SVD_vs_rSVD.jpg}}
+\caption{The four fundamental subspaces of linear algebra.}
+\label{SVD_vs_rSVD}
+\end{figure}
+
 On errors related to SVD and rSVD.
 
 \begin{equation}
@@ -120,15 +133,11 @@ $\|A\|_2 = \sup_{\|x\|=1} \|Ax\|$ and the Frobenius norm is given by
 \paragraph{QR factorization}\label{QRFact}
 The QR factorization of $A\in\mathbb R^{m\times b}$ is a decomposition $A = QR$, where $Q\in\mathbb R^{m\times n}$ has orthonormal columns and $R\in\mathbb R^{n\times n}$ is upper diagonal.
 
-\paragraph{Fundamental subspaces}
+\paragraph{Tips regarding figures and tables}
 Place figures and tables at the top and bottom of columns. Avoid placing them in the middle of columns. Figure captions should be 
 below the figures. Insert figures and tables after they are cited in the text. Use the abbreviation 
-``Fig.~\ref{fig}'', even at the beginning of a sentence.
-\begin{figure}[htbp]
-\centerline{\includegraphics[width=0.4\textwidth]{foursubspaces.jpg}}
-\caption{The four fundamental subspaces of linear algebra.}
-\label{fig}
-\end{figure}
+``Fig.~\ref{SVD_vs_rSVD}'', even at the beginning of a sentence.
+
 
 
 \end{document}
