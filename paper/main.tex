@@ -44,7 +44,7 @@ Consider the goal of finding a $k$-rank approximation to $A$. We are seeking a m
 \begin{equation}\label{probForm1}
 \min_{\text{rank}(X)\le k} \|A - X \|_2
 \end{equation}
-where $\| \cdot \|$ is the $\ell_2$ operator norm. Equivalently, every rank-$k$ matrix can be viewed as the projection of $A$ onto a $k$-dimensional subspace of $\mathbb R^m$. 
+where $\| \cdot \|_2$ is the $\ell_2$ operator norm. Equivalently, every rank-$k$ matrix can be viewed as the projection of $A$ onto a $k$-dimensional subspace of $\mathbb R^m$. 
 
 Let $Q\in\mathbb R^{m\times k}$ have orthonormal columns. Then $QQ^TA$ is the orthogonal projection of $A$ onto the $k$-dimensional subspace $\text{span}(Q)$. The problem can also be formulated as
 \begin{equation}\label{probForm2}
