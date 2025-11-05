@@ -76,7 +76,23 @@ $$
 Since $A \approx QQ^TA = QB = Q\tilde U\Sigma V^T$, letting $U = Q\tilde U$ gives the low-rank approximation $A \approx U\Sigma V^T$.
 
 \section{Results}\label{RE}
-This section contains results.
+
+\subsection{Test matrix construction}
+To compare the performance of the SVD and the rSVD on data with a specified decay of singular values, I generate random test matrices $A=U\Sigma V^T$, where $U$ and $V$ are random orthogonal matrices, and $\Sigma$ is a diagonal matrix with prescribed singular values $\{\sigma_1, \dots, \sigma_n\}$.
+
+Each orthogonal matrix is constructed by drawing a random $n\times n$ matrix $\Omega$ with independent elements from the standard normal distribution, performing a QR decomposition $\Omega = \tilde QR$, and correcting the signs of the orthogonal columns with $Q = \tilde Q\Lambda$, where $\Lambda = \text{diag}(\text{sign}(R_{ii}))$,  so that the diagonal elements or $R$ are positive. This procedure generates random orthogonal matrices uniformly distributed over the orthogonal group (Haar measure) \cite{mezzadri_how_2007}.
+
+To investigate how spectral decay affects accuracy, three sets of prescribed singular values are used. I use the polynomially decaying sequence of the form
+\begin{equation}
+    \sigma_{k+1} = \frac{10}{(1 + \alpha k)^2},\quad k=0,\dots,n-1,
+\end{equation}
+where the parameter $\alpha$ controls the rate of decay. The parameters used in this study  are $\alpha_1=0.01$, $\alpha_2 = 0.2$ and $\alpha_3 = 0.75$, which corresponds to a slow, medium and a rapid spectral decay, respectively (see Fig.~\ref{spectralDecay}).
+
+\begin{figure}[htbp]
+    \centerline{\includegraphics[width=0.57\textwidth]{singular_value_decay.png}}
+    \caption{The slow, medium, and rapid spectral decay used for the test matrix generation.}
+    \label{spectralDecay}
+\end{figure}
 
 \subsection{Singular value decomposition}
 Results on SVD.
@@ -91,12 +107,6 @@ A \approx (Q\tilde{U})\Sigma V^T = U\Sigma V^T
 Reference to \eqref{rSVD}.
 
 \subsection{Error estimates}
-
-\begin{figure}[htbp]
-\centerline{\includegraphics[width=0.57\textwidth]{singular_value_decay.png}}
-\caption{The four fundamental subspaces of linear algebra.}
-\label{SVD_vs_rSVD}
-\end{figure}
 
 On errors related to SVD and rSVD.
 
@@ -113,11 +123,6 @@ This section contains discussion.
 
 \section{Conclusion}\label{CO}
 This section contains the conclusion.
-
-\section*{Acknowledgment}
-Tips: Avoid the stilted expression ``one of us (R. B. 
-G.) thanks $\ldots$''. Instead, try ``R. B. G. thanks$\ldots$''. Put sponsor 
-acknowledgments in the unnumbered footnote on the first page.
 
 \bibliographystyle{plain}  % or 'unsrt', 'alpha', 'ieeetr', etc.
 \bibliography{references}
@@ -136,7 +141,7 @@ The QR factorization of $A\in\mathbb R^{m\times b}$ is a decomposition $A = QR$,
 \paragraph{Tips regarding figures and tables}
 Place figures and tables at the top and bottom of columns. Avoid placing them in the middle of columns. Figure captions should be 
 below the figures. Insert figures and tables after they are cited in the text. Use the abbreviation 
-``Fig.~\ref{SVD_vs_rSVD}'', even at the beginning of a sentence.
+``Fig.~\ref{spectralDecay}'', even at the beginning of a sentence.
 
 
 
