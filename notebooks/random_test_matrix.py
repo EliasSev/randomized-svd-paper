@@ -37,3 +37,13 @@ def random_test_matrix(m, n, singular_values):
     U = random_orthogonal_matrix(m)
     V = random_orthogonal_matrix(n)
     return U @ S @ V.T
+
+
+def N_random_test_matrices(N, m, n, singular_values):
+    """
+    Get N random test matrices of size (m, n) with the prescribed singular values.
+    """
+    A = np.zeros((N, m, n))
+    for i in range(N):
+        A[i, :, :] = random_test_matrix(m, n, singular_values)
+    return A

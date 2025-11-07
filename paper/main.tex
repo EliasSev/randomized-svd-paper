@@ -3,10 +3,16 @@
 % The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
-\usepackage{algorithmic}
+%\usepackage{algorithmic}
 \usepackage{graphicx}
 \usepackage{textcomp}
 \usepackage{xcolor}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+
 \graphicspath{{../figures/}}
 \def\BibTeX{
     {\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
@@ -56,24 +62,31 @@ The singular value decomposition of a matrix $A\in\mathbb R^{m\times n}$ is a fa
 $$
 A = U\Sigma V^T
 $$
-where $U$ is an $m \times m$ orthogonal matrix, $\Sigma$ is an $m\times n$ diagonal matrix with non-negative values, called the singular values of $A$, along its diagonal, and $V$ is an $n \times n$ orthogonal matrix. Every matrix has such a factorization, where $\Sigma$ is uniquely determined, but $U$ and $V$ are not \cite{lay_linear_2022}. The columns of $U$ and $V$ are called the left and right singular vectors of $A$, respectively. 
+where $U$ is an $m \times m$ orthogonal matrix, $\Sigma$ is an $m\times n$ diagonal matrix with non-negative values, called the singular values of $A$, along its diagonal, and $V$ is an $n \times n$ orthogonal matrix. The singular values are ordered such that $\sigma_1\ge\sigma_2\ge\dots\ge\sigma_n$. Every matrix has such a factorization, where $\Sigma$ is uniquely determined, but $U$ and $V$ are not \cite{lay_linear_2022}. The columns of $U$ and $V$ are called the left and right singular vectors of $A$, respectively. 
 
 In a 1936 paper, C. Eckart and G. Young showed that the solution to \eqref{probForm1} is $X = U_k\Sigma_k V_k^T$, where $U_k$ and $V_k$ consists of the $k$ first left and right singular vectors of $A$, respectively, and $\Sigma_k$ the $k$ first singular values of $A$ \cite{eckart_approximation_1936}. This is now known as the Eckart–Young–Mirsky theorem. Alternatively, the solution $Q$ of \eqref{probForm2} consists of the $k$ first left singular values of $A$.
 
 \subsection{The randomized SVD}
-Randomized singular value decomposition (rSVD) is a technique used to approximate the $k$-rank approximation of an $m\times n$ matrix  without computing the SVD. The core idea is to use random sampling of  to find a low-rank matrix $Q$ which approximates the range of $A$.
 
-Halko et al proposed the Proto-Algorithm for computing the rSVD. Pick a target rank $k$ and an oversampling parameter $p$ and draw a $m\times (k+p)$ random test matrix $\Omega$. 
+\begin{algorithm}[!t]
+\caption{rSVD}
+\label{alg:rsvd}
+\begin{algorithmic}[1]
+    \Require $A\in\mathbb R^{m\times n}$, target rank $k$, oversampling parameter $p$.
+    \Ensure Approximate rank-$k$ factorization $U\Sigma V^T$.
+    \State Generate a random test matrix $\Omega$.
+    \State Compute $Y = A\Omega$.
+    \State Form an orthonormal basis $Q$ of $Y$.
+    \State Set $B = Q^TA$.
+    \State Compute the SVD $B = \tilde U\Sigma V^T$.
+    \State Set $U = Q\tilde U$. 
+\end{algorithmic}
+\end{algorithm}
 
-Next, let
-$$
-Y = A\Omega
-$$
-it can be shown that with a high probability span the dominant subspace of $A$ (reference). Then, compute the orthogonal basis $Q$ of $Y$, and form the projection $B = Q^TA$. We can now compute the SVD of $B$,
-$$
-B = \tilde U\Sigma V^T
-$$
-Since $A \approx QQ^TA = QB = Q\tilde U\Sigma V^T$, letting $U = Q\tilde U$ gives the low-rank approximation $A \approx U\Sigma V^T$.
+Randomized singular value decomposition (rSVD) is a technique used to approximate the $k$-rank approximation of an $m\times n$ matrix without computing the SVD. The core idea is to use random sampling to find a low-rank matrix $Q$ which approximates the range of $A$, i.e. $A\approx QQ^TA$. Computation of the approximate SVD of $A$ is then done using the basis $Q$. This procedure is summarized in Algorithm \ref{alg:rsvd} \cite{halko_finding_2011}. Note that the approximation $A\approx QQ^T A$ and the approximate factorization $A\approx U\Sigma V^T$ produced by rSVD have the same error. This can be seen by observing that $QQ^TA = QB = Q\tilde U\Sigma V^T$, and setting $U=Q\tilde U$.
+
+\subsection{Computational cost}
+Assume that $A$ is an $m\times n$ matrix. The common techniques used by linear algebra libraries like LAPACK or ScaLAPACK for computing the SVD are based on a two stage algorithm. The first stage consists of reducing $A$ a bi-diagonal form, and the second stage computes the factorization using QR or a divide-and-conquer approach. The cost of such a process is on the order of $\mathcal O(mn\min\{m,n\})$, which reduces to $\mathcal O(m^2n)$ for under-determined systems where $m < n$.
 
 \section{Results}\label{RE}
 
@@ -86,11 +99,11 @@ To investigate how spectral decay affects accuracy, three sets of prescribed sin
 \begin{equation}
     \sigma_{k+1} = \frac{10}{(1 + \alpha k)^2},\quad k=0,\dots,n-1,
 \end{equation}
-where the parameter $\alpha$ controls the rate of decay. The parameters used in this study  are $\alpha_1=0.01$, $\alpha_2 = 0.2$ and $\alpha_3 = 0.75$, which corresponds to a slow, medium and a rapid spectral decay, respectively (see Fig.~\ref{spectralDecay}).
+where the parameter $\alpha$ controls the rate of decay. The parameters used in this study  are $\alpha_1=0.01$, $\alpha_2 = 0.1$ and $\alpha_3 = 0.5$, which corresponds to a slow, moderate and a rapid spectral decay, respectively (see Fig.~\ref{spectralDecay}).
 
-\begin{figure}[htbp]
+\begin{figure}[tbp]
     \centerline{\includegraphics[width=0.57\textwidth]{singular_value_decay.png}}
-    \caption{The slow, medium, and rapid spectral decay used for the test matrix generation.}
+    \caption{The slow, moderate, and rapid spectral decay used for the test matrix generation.}
     \label{spectralDecay}
 \end{figure}
 
@@ -142,7 +155,6 @@ The QR factorization of $A\in\mathbb R^{m\times b}$ is a decomposition $A = QR$,
 Place figures and tables at the top and bottom of columns. Avoid placing them in the middle of columns. Figure captions should be 
 below the figures. Insert figures and tables after they are cited in the text. Use the abbreviation 
 ``Fig.~\ref{spectralDecay}'', even at the beginning of a sentence.
-
 
 
 \end{document}
