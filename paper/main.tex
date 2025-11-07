@@ -59,9 +59,9 @@ Let $Q\in\mathbb R^{m\times k}$ have orthonormal columns. Then $QQ^TA$ is the or
 
 \subsection{The singular value decomposition}
 The singular value decomposition of a matrix $A\in\mathbb R^{m\times n}$ is a factorization of the form
-$$
-A = U\Sigma V^T
-$$
+\begin{equation}
+    A = U\Sigma V^T
+\end{equation}
 where $U$ is an $m \times m$ orthogonal matrix, $\Sigma$ is an $m\times n$ diagonal matrix with non-negative values, called the singular values of $A$, along its diagonal, and $V$ is an $n \times n$ orthogonal matrix. The singular values are ordered such that $\sigma_1\ge\sigma_2\ge\dots\ge\sigma_n$. Every matrix has such a factorization, where $\Sigma$ is uniquely determined, but $U$ and $V$ are not \cite{lay_linear_2022}. The columns of $U$ and $V$ are called the left and right singular vectors of $A$, respectively. 
 
 In a 1936 paper, C. Eckart and G. Young showed that the solution to \eqref{probForm1} is $X = U_k\Sigma_k V_k^T$, where $U_k$ and $V_k$ consists of the $k$ first left and right singular vectors of $A$, respectively, and $\Sigma_k$ the $k$ first singular values of $A$ \cite{eckart_approximation_1936}. This is now known as the Eckart–Young–Mirsky theorem. Alternatively, the solution $Q$ of \eqref{probForm2} consists of the $k$ first left singular values of $A$.
@@ -83,10 +83,13 @@ In a 1936 paper, C. Eckart and G. Young showed that the solution to \eqref{probF
 \end{algorithmic}
 \end{algorithm}
 
-Randomized singular value decomposition (rSVD) is a technique used to approximate the $k$-rank approximation of an $m\times n$ matrix without computing the SVD. The core idea is to use random sampling to find a low-rank matrix $Q$ which approximates the range of $A$, i.e. $A\approx QQ^TA$. Computation of the approximate SVD of $A$ is then done using the basis $Q$. This procedure is summarized in Algorithm \ref{alg:rsvd} \cite{halko_finding_2011}. Note that the approximation $A\approx QQ^T A$ and the approximate factorization $A\approx U\Sigma V^T$ produced by rSVD have the same error. This can be seen by observing that $QQ^TA = QB = Q\tilde U\Sigma V^T$, and setting $U=Q\tilde U$.
+Randomized singular value decomposition (rSVD) is a technique used to approximate the rank-$k$ approximation of an $m\times n$ matrix without computing the SVD. The core idea is to use random sampling to find a low-rank matrix $Q$ which approximates the range of $A$, project $A$ into $Q$, and compute the SVD of the projection. The projection $Y=Q^TA$ will with a high probability capture the dominant directions of $A$, and the SVD of $Y$ will yield a good approximation \cite{halko_finding_2011}. This procedure is summarized in Algorithm \ref{alg:rsvd}. Note that the approximation $A\approx QQ^T A$ and the approximate factorization $A\approx U\Sigma V^T$ produced by rSVD have the same error. This can be seen by observing that $QQ^TA = QB = Q\tilde U\Sigma V^T$, and setting $U=Q\tilde U$.
 
 \subsection{Computational cost}
-Assume that $A$ is an $m\times n$ matrix. The common techniques used by linear algebra libraries like LAPACK or ScaLAPACK for computing the SVD are based on a two stage algorithm. The first stage consists of reducing $A$ a bi-diagonal form, and the second stage computes the factorization using QR or a divide-and-conquer approach. The cost of such a process is on the order of $\mathcal O(mn\min\{m,n\})$, which reduces to $\mathcal O(m^2n)$ for under-determined systems where $m < n$.
+Assume that $A\in\mathbb R^{m\times n}$. Standard implementations of the SVD in linear algebra libraries like LAPACK or ScaLAPACK are based on two stage algorithm. In the first, $A$ is reduced to a bi-diagonal form through Householder transformations og Gives rotations. In the second stage, the SVD of the bidiagonal matrix if computed, typically using a QR-based or a divide-and-conquer approach. The LAPACK routine GESDD, used in this study, implements the divide-and-conquer method, which typically achieves higher performance compared to the QR-based approach \cite{dongarra_singular_2018}. The cost of this process is of the order $\mathcal O(mn\min\{m,n\})$, which simplifies to $\mathcal O(m^2n)$ for under-determined systems where $m < n$.
+
+The rSVD algorithm consists of two stages. In the first stage, an approximate orthogonal basis $Q$ of $A$ is constructed, and in the second stage, the SVD is approximated using the projection of $A$ onto $Q$. Algorithm 1, which is an implementation of both stages, has an computation cost of $\mathcal O(mnk)$, however, it is possible to achieve a cost of $\mathcal O(mn\log k)$ \cite{halko_finding_2011}.
+
 
 \section{Results}\label{RE}
 
