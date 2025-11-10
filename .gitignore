@@ -20,3 +20,4 @@ wheels/
 *.gz
 
 .vscode
+*.npy
