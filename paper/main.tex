@@ -74,7 +74,7 @@ In a 1936 paper, C. Eckart and G. Young showed that the solution to \eqref{probF
 \begin{algorithmic}[1]
     \Require $A\in\mathbb R^{m\times n}$, target rank $k$, oversampling parameter $p$.
     \Ensure Approximate rank-$k$ factorization $U\Sigma V^T$.
-    \State Generate a random test matrix $\Omega$.
+    \State Generate a random $n\times(k+p)$ test matrix $\Omega$.
     \State Compute $Y = A\Omega$.
     \State Form an orthonormal basis $Q$ of $Y$.
     \State Set $B = Q^TA$.
@@ -102,11 +102,15 @@ To investigate how spectral decay affects accuracy, three sets of prescribed sin
 \begin{equation}
     \sigma_{k+1} = \frac{10}{(1 + \alpha k)^2},\quad k=0,\dots,n-1,
 \end{equation}
-where the parameter $\alpha$ controls the rate of decay. The parameters used in this study  are $\alpha_1=0.01$, $\alpha_2 = 0.1$ and $\alpha_3 = 0.5$, which corresponds to a slow, moderate and a rapid spectral decay, respectively (see Fig.~\ref{spectralDecay}).
+where the parameter $\alpha$ controls the rate of decay. The condition number is $\kappa = \sigma_1 / \sigma_{n} = (1 + \alpha n - \alpha)^2$, and solving for $\alpha$ gives
+\begin{equation}
+\alpha = \frac{\sqrt{\kappa(n-1)^2}-n+1}{(n-1)^2}.
+\end{equation}
+In this study, I use the condition numbers $\kappa = 3,\space 100,\space 1000$, which corresponds to slow, moderate and a rapid spectral decay (see Fig.~\ref{spectralDecay}).
 
 \begin{figure}[tbp]
     \centerline{\includegraphics[width=0.57\textwidth]{singular_value_decay.png}}
-    \caption{The slow, moderate, and rapid spectral decay used for the test matrix generation.}
+    \caption{The slow, moderate, and rapid spectral decay used for the test matrix generation. In this figure, for $n=100$}
     \label{spectralDecay}
 \end{figure}
 
