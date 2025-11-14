@@ -732,7 +732,6 @@ dependencies = [
     { name = "ipykernel" },
     { name = "matplotlib" },
     { name = "numpy" },
-    { name = "pillow" },
     { name = "scipy" },
 ]
 
@@ -741,7 +740,6 @@ requires-dist = [
     { name = "ipykernel", specifier = ">=7.1.0" },
     { name = "matplotlib", specifier = ">=3.10.7" },
     { name = "numpy", specifier = ">=2.3.3" },
-    { name = "pillow", specifier = ">=11.3.0" },
     { name = "scipy", specifier = ">=1.16.3" },
 ]
 

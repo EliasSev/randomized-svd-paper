@@ -1,13 +1,12 @@
 [project]
 name = "randomized-svd-paper"
 version = "0.1.0"
-description = "Add your description here"
+description = "Randomized SVD paper for the DAT390 course."
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "ipykernel>=7.1.0",
     "matplotlib>=3.10.7",
     "numpy>=2.3.3",
-    "pillow>=11.3.0",
     "scipy>=1.16.3",
 ]
