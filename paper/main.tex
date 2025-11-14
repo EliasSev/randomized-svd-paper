@@ -8,6 +8,7 @@
 \usepackage{xcolor}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
+\usepackage{booktabs}
 
 \renewcommand{\algorithmicrequire}{\textbf{Input:}}
 \renewcommand{\algorithmicensure}{\textbf{Output:}}
@@ -41,7 +42,7 @@ Low-rank matrix approximations are essential in modern applications like scienti
 
 \section{Introduction}
 % Motivation: big data
-The need for efficient and accurate numerical algorithms for data analysis is more relevant than ever. Modern scientific and industrial applications produce data sets of massive scale and complexity. In physics simulation, discretization of partial differential equations gives linear systems billions of unknowns \cite{ohana_well_2025}. In medical image analysis, large-scale studies produces data sets with hundreds of thousands of images \cite{bustos_medical_2020}. Similarly, in natural language processing, document-term matrices can have tens of thousands of columns and hundreds of rows \cite{antonellis_exploring_2006}. Indeed, large-scale data sets naturally occur in a wide range of fields and applications.
+The need for efficient and accurate numerical algorithms for data analysis is more relevant than ever. Modern scientific and industrial applications produce data sets of massive scale and complexity. In physics simulation, discretization of partial differential equations gives linear systems with billions of unknowns \cite{ohana_well_2025}. In medical image analysis, large-scale studies produces data sets with hundreds of thousands of images \cite{bustos_medical_2020}. Similarly, in natural language processing, document-term matrices can have tens of thousands of columns and hundreds of rows \cite{antonellis_exploring_2006}. Indeed, large-scale data sets naturally occur in a wide range of fields and applications.
 
 % Introducing the SVD, its challenges, and the rSVD
 The singular value decomposition (SVD) is a fundamental tool in data analysis and numerical linear algebra. It has numerous applications, including dimensionality reduction and high-dimensional data visualization \cite{gewers_principal_2021}, data compression \cite{mathews_image_nodate}, and various regularization techniques \cite{hansen_discrete_2010}. Given a matrix $A\in\mathbb R^{m\times n}$, the SVD decomposes the matrix into its main directions of variation, the singular vectors, and a set of singular values describing the importance of the identified directions. However, the computational cost of the SVD is expensive: for an $n\times n$ matrix, the cost scales as $\mathcal O(n^3)$, which makes it infeasible for many large scale applications. This has motivated the development of randomized algorithms, notably the randomized SVD (rSVD), which provides an efficient alterative at the cost of lower accuracy.
@@ -124,14 +125,34 @@ To compare the performance of the SVD and the rSVD on data with a specified deca
 Each orthogonal matrix is constructed by drawing a random $n\times n$ matrix $\Omega$ with independent elements from the standard normal distribution, performing a QR decomposition $\Omega = \tilde QR$, and correcting the signs of the orthogonal columns with $Q = \tilde Q\Lambda$, where $\Lambda = \text{diag}(\text{sign}(R_{ii}))$,  so that the diagonal elements or $R$ are positive. This procedure generates random orthogonal matrices uniformly distributed over the orthogonal group (Haar measure) \cite{mezzadri_how_2007}.
 
 To investigate how spectral decay affects accuracy, three sets of prescribed singular values are used. I use the polynomially decaying sequence of the form
-\begin{equation}
+\begin{equation}\label{decay}
 \sigma_{k+1} = \frac{10}{(1 + \alpha k)^2},\quad k=0,\dots,n-1,
 \end{equation}
 where the parameter $\alpha$ controls the rate of decay. The condition number is $\kappa = \sigma_1 / \sigma_{n} = (1 + \alpha n - \alpha)^2$, and solving for $\alpha$ gives
 \begin{equation}
 \alpha = \frac{\sqrt{\kappa(n-1)^2}-n+1}{(n-1)^2}.
 \end{equation}
-In this study, I use the condition numbers $\kappa = 3,\space 100,\space 1000$, which corresponds to slow, moderate and a rapid spectral decay (see Fig.~\ref{spectralDecay}).
+In this study, I use the condition numbers $\kappa_1 = 2$, $\kappa_2 = 50$, and $\kappa_3 = 1000$, which corresponds to slow, moderate and a rapid spectral decay (see Fig.~\ref{spectralDecay}). The singular values from \eqref{decay} are placed on the diagonal of $\Sigma$, and the test matrix is the result of $A = U\Sigma V^T$.
+
+The size of the test matrices are set to $n\times 5n$, for the values $n=100$, $n=500$, and $n=1000$, which I refer to as the small, medium and large case, respectively. For each combination of spectral decay (slow, moderate, rapid) and matrix size (small, medium, large), I generate $R$ random samples depending on the size, where $R=30$ for the small case, $R=15$ for the medium case, and $R=5$ for the large case. See Table~\ref{tab:matrixCount} for an overview.
+
+\begin{table}[ht]
+\centering
+\caption{Number of test matrices used for each combination of matrix size and spectral decay.}
+\label{tab:matrixCount}
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{lccc}
+    \toprule
+    \textbf{Matrix size (dimensions)} & \textbf{Slow decay} & \textbf{Moderate decay} & \textbf{Rapid decay} \\
+    \midrule
+    Small  ($n_s \times 5n_s$)  & 30 & 30 & 30 \\
+    Medium ($n_m \times 5n_m$)  & 15 & 15 & 15 \\
+    Large  ($n_l \times 5n_l$)  & 5  & 5  & 5  \\
+    \bottomrule
+\end{tabular}
+}
+\end{table}
+
 
 \begin{figure}[tbp]
     \centerline{\includegraphics[width=0.50\textwidth]{singular_value_decay.png}}
