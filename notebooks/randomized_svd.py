@@ -63,7 +63,7 @@ def rsvd2(A, k, q=2):
     # Project U_B back to the original space
     U = Q @ U_B
 
-    return U, S, 
+    return U, S, Vt
 
 
 def interpolative_decomp(A, k):
