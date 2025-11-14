@@ -100,7 +100,7 @@ where $\mathbb E$ denotes the expected value. A proof of this can be found in \c
 
 
 \subsection{Computational cost}
-Assume that $A\in\mathbb R^{m\times n}$. Standard implementations of the SVD in linear algebra libraries like LAPACK or ScaLAPACK are based on two stage algorithm. In the first, $A$ is reduced to a bi-diagonal form through Householder transformations or Gives rotations. In the second stage, the SVD of the bidiagonal matrix if computed, typically using a QR-based or a divide-and-conquer approach. The LAPACK routine GESDD, used in this study, implements the divide-and-conquer method, which typically achieves higher performance compared to the QR-based approach \cite{dongarra_singular_2018}. The cost of this process is of the order $\mathcal O(mn\min\{m,n\})$, which simplifies to $\mathcal O(m^2n)$ for under-determined systems where $m < n$.
+Assume that $A\in\mathbb R^{m\times n}$. Standard implementations of the SVD in linear algebra libraries like LAPACK or ScaLAPACK are based on two stage algorithms. In the first stage, $A$ is reduced to a bi-diagonal form through Householder transformations or Gives rotations. In the second stage, the SVD of the bidiagonal matrix if computed, typically using a QR-based or a divide-and-conquer approach. The LAPACK routine GESDD, used in this study, implements the divide-and-conquer method, which typically achieves higher performance compared to the QR-based approach \cite{dongarra_singular_2018}. The cost of this process is of the order $\mathcal O(mn\min\{m,n\})$, which simplifies to $\mathcal O(m^2n)$ for under-determined systems where $m < n$.
 
 The rSVD algorithm consists of two stages. In the first stage, an approximate orthogonal basis $Q$ of $A$ is constructed, and in the second stage, the SVD is approximated using the projection of $A$ onto $Q$. Algorithm 1, which is an implementation of both stages, has an computation cost of $\mathcal O(mnk)$, however, it is possible to achieve a cost of $\mathcal O(mn\log k)$ \cite{halko_finding_2011}.
 
@@ -129,17 +129,37 @@ In this study, I use the condition numbers $\kappa = 3,\space 100,\space 1000$, 
     \label{spectralDecay}
 \end{figure}
 
-\subsection{Singular value decomposition}
-Results on SVD.
+\subsection{Computation times}
+This section contains results on the computation time on rSVD and SVD.
 
-\subsection{Randomized SVD}
-Results on rSVD,
+\begin{figure}[tbp]
+    \centerline{\includegraphics[width=0.5\textwidth]{timing_all.png}}
+    \caption{Median computation time for SVD and rSVD on wide data $A$ of size $n\times 5n$, and on tall data $A^T$ of size $5n \times n$, for increasing $k$. Median taken over $R$ runs, depending on the data size. Top: $n=100$ and $R=30$. Middle: $n=500$ and $R=10$. Bottom: $n=1000$ and $R=5$.}
+    \label{timeAll}
+\end{figure}
 
-\begin{equation}\label{rSVD}
-A \approx (Q\tilde{U})\Sigma V^T = U\Sigma V^T
-\end{equation}
+\begin{figure}[tbp]
+    \centerline{\includegraphics[width=0.5\textwidth]{speedups_all.png}}
+    \caption{Median speedup of rSVD compared to SVD for tall and wide data for small, medium and large matrices.}
+    \label{speedUp}
+\end{figure}
 
-Reference to \eqref{rSVD}.
+
+\subsection{Errors}
+This section contains results on the errors produced by the rSVD and the SVD.
+
+\begin{figure}[tbp]
+    \centerline{\includegraphics[width=0.5\textwidth]{errors_raw.png}}
+    \caption{Average errors for rSVD and best possible error achieved by the SVD for different spectral decays and matrix sizes. The y-axis shows the $\ell_2$ operator norm, and the x-axis is the approximation rank $k$.}
+    \label{errorsRaw}
+\end{figure}
+
+\begin{figure}[tbp]
+    \centerline{\includegraphics[width=0.5\textwidth]{errors_relative.png}}
+    \caption{The relative error of rSVD, in $\%$, compared to SVD, for different spectral decays and matrix sizes. The y-axis shows the $\%$-difference in $\ell_2$ operator norm, and the x-axis is the approximation rank $k$.}
+    \label{errorsRelative}
+\end{figure}
+
 
 \subsection{Error estimates}
 
@@ -159,7 +179,7 @@ This section contains the conclusion.
 \paragraph{Operator norm}\label{MatrixNorms}
 The $\ell_2$ operator norm of $A\in\mathbb R^{m\times n}$ is the smallest $c\in\mathbb R$ such that $\|Ax\|\le c\|x\|$ for all $x\in \mathbb R^n$, denoted $\|A\|_2$. It is a well known result that
 \begin{equation}
-    \|A\| = \sup_{\|x\| = 1}\|Ax\|,
+    \|A\|_2 = \sup_{\|x\| = 1}\|Ax\|,
 \end{equation}
 for instance, see Lemma 2.7-2 in \cite{kreyszig_functional_1991}.
 \paragraph{QR factorization}\label{QRFact}
