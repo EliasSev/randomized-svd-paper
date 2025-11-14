@@ -1,9 +1,8 @@
 \documentclass[conference]{IEEEtran}
-\IEEEoverridecommandlockouts
+%\IEEEoverridecommandlockouts
 % The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
-%\usepackage{algorithmic}
 \usepackage{graphicx}
 \usepackage{textcomp}
 \usepackage{xcolor}
@@ -37,11 +36,17 @@
 \maketitle
 
 \begin{abstract}
-Low-rank matrix approximations are essential in modern applications like scientific computing and data analysis. In recent years the volume of data has seen a rapid increase, resulting in a need for efficient and accurate low-rank approximations. The computation of the singular value decomposition (SVD) is fundamental within low-rank approximations, but is computationally infeasible as the data size increases. Randomized SVD (rSVD) provides an efficient solution using randomized algorithms to approximate the SVD by first projecting the data onto a low-dimensional space before performing the SVD, significantly reducing the computation time. In this paper I will analyze the computation time and error of rSVD, comparing it with theoretical results and with the SVD.
+Low-rank matrix approximations are essential in modern applications like scientific computing and data analysis. In recent years the volume of data has seen a rapid increase, resulting in a need for efficient and accurate low-rank approximations. The computation of the singular value decomposition (SVD) is fundamental within low-rank approximations, but is computationally infeasible as the data size increases. Randomized SVD (rSVD) provides an efficient solution using randomized algorithms to approximate the SVD by first projecting the data onto a low-dimensional space before performing the SVD, significantly reducing the computation time. In this paper I will analyze the computation time on data if wide and tall format, comparing the two cases, and analyzing the error on matrices of different properties.
 \end{abstract}
 
 \section{Introduction}
-This is the introduction.
+% Motivation: big data
+The need for efficient and accurate numerical algorithms for data analysis is more relevant than ever. Modern scientific and industrial applications produce data sets of massive scale and complexity. In physics simulation, discretization of partial differential equations gives linear systems billions of unknowns \cite{ohana_well_2025}. In medical image analysis, large-scale studies produces data sets with hundreds of thousands of images \cite{bustos_medical_2020}. Similarly, in natural language processing, document-term matrices can have tens of thousands of columns and hundreds of rows \cite{antonellis_exploring_2006}. Indeed, large-scale data sets naturally occur in a wide range of fields and applications.
+
+% Introducing the SVD, its challenges, and the rSVD
+The singular value decomposition (SVD) is a fundamental technique in data analysis and numerical linear algebra. Its applications are many: visualization of high dimensional data, dimensionality reduction, data compression, regularization techniques, to name a few. The SVD decomposes a matrix $A\in\mathbb R^{m\times n}$ into it's fundamental parts, revealing the main components of the matrix. The computational cost of the SVD scales cubicly (??) for $n\times n$ matrices, making it computationally infeasible in many applications with large matrices. The randomized SVD (rSVD) solves this using randomized algorithms, relying on random matrix theory to compute an rank-$k$ approximate SVD. By taking random samples of the column space of $A$, and approximate orthonormal basis $Q$ is constructed. The matrix $A$ is projected onto it's approximate column space, reducing it's size, but keeping the main information in the matrix. 
+
+% The goal is this paper
 
 \section{Theory}\label{TH}
 
@@ -66,6 +71,8 @@ where $U$ is an $m \times m$ orthogonal matrix, $\Sigma$ is an $m\times n$ diago
 
 \subsection{The randomized SVD}
 
+Randomized singular value decomposition (rSVD) is a technique used to approximate the rank-$k$ approximation of an $m\times n$ matrix without computing the SVD. The core idea is to use random sampling to find a low-rank matrix $Q$ which approximates the range of $A$, project $A$ onto $Q$, and compute the SVD of the projection. The projection $Y=Q^TA$ will with a high probability capture the dominant directions of $A$, and the SVD of $Y$ will yield a good approximation \cite{halko_finding_2011}. This procedure is summarized in Algorithm \ref{alg:rsvd}. Note that the approximation $A\approx QQ^T A$ and the approximate factorization $A\approx U\Sigma V^T$ produced by rSVD have the same error. This can be seen by observing that $QQ^TA = QB = Q\tilde U\Sigma V^T$, and setting $U=Q\tilde U$.
+
 \begin{algorithm}[!t]
 \caption{rSVD}
 \label{alg:rsvd}
@@ -81,8 +88,6 @@ where $U$ is an $m \times m$ orthogonal matrix, $\Sigma$ is an $m\times n$ diago
 \end{algorithmic}
 \end{algorithm}
 
-Randomized singular value decomposition (rSVD) is a technique used to approximate the rank-$k$ approximation of an $m\times n$ matrix without computing the SVD. The core idea is to use random sampling to find a low-rank matrix $Q$ which approximates the range of $A$, project $A$ onto $Q$, and compute the SVD of the projection. The projection $Y=Q^TA$ will with a high probability capture the dominant directions of $A$, and the SVD of $Y$ will yield a good approximation \cite{halko_finding_2011}. This procedure is summarized in Algorithm \ref{alg:rsvd}. Note that the approximation $A\approx QQ^T A$ and the approximate factorization $A\approx U\Sigma V^T$ produced by rSVD have the same error. This can be seen by observing that $QQ^TA = QB = Q\tilde U\Sigma V^T$, and setting $U=Q\tilde U$.
-
 \subsection{Error estimates}
 In 1936, C. Eckart and G. Young showed that the solution to \eqref{probForm1} is $X = U_k\Sigma_k V_k^T$, where $U_k$ and $V_k$ consists of the $k$ first left and right singular vectors of $A$, respectively, and $\Sigma_k$ the $k$ first singular values of $A$ \cite{eckart_approximation_1936}. This is known as the Eckart–Young–Mirsky theorem. Alternatively, the solution $Q$ of \eqref{probForm2} consists of the $k$ first left singular values of $A$. This implies that
 \begin{equation}\label{svdError}
@@ -95,15 +100,14 @@ Let $A\in\mathbb R^{m\times n}$, and pick a target rank $k\ge 2$ and an oversamp
 \mathbb E\|A - X\|_2 \le \gamma_k \sigma_{k+1}, \\
 \gamma_k = \left[ 1 + \frac{4 \sqrt{k+p}}{p-1} \sqrt{\min\{m,n\}} \right],
 \end{eqnarray}
-where $\mathbb E$ denotes the expected value. A proof of this can be found in \cite{halko_finding_2011}. It is always the case that $\gamma_k > 1$, and for \eqref{rsvdError} to give a good upper bound, the singular values $\sigma_k$ must approach zero faster than $\gamma_k$ as $k$ increases.
+where $\mathbb E$ denotes the expected value. A proof of this can be found in \cite{halko_finding_2011}. It is always the case that $\gamma_k > 1$, and for \eqref{rsvdError} to give a good upper bound, the singular values $\sigma_k$ must approach zero faster than $\gamma_k$ increases.
 
 
 
 \subsection{Computational cost}
-Assume that $A\in\mathbb R^{m\times n}$. Standard implementations of the SVD in linear algebra libraries like LAPACK or ScaLAPACK are based on two stage algorithms. In the first stage, $A$ is reduced to a bi-diagonal form through Householder transformations or Gives rotations. In the second stage, the SVD of the bidiagonal matrix if computed, typically using a QR-based or a divide-and-conquer approach. The LAPACK routine GESDD, used in this study, implements the divide-and-conquer method, which typically achieves higher performance compared to the QR-based approach \cite{dongarra_singular_2018}. The cost of this process is of the order $\mathcal O(mn\min\{m,n\})$, which simplifies to $\mathcal O(m^2n)$ for under-determined systems where $m < n$.
+Assume that $A\in\mathbb R^{m\times n}$. Standard implementations of the SVD in linear algebra libraries like LAPACK or ScaLAPACK are based on two stage algorithms. In the first stage, $A$ is reduced to a bi-diagonal form through Householder transformations or Gives rotations. In the second stage, the SVD of the bidiagonal matrix if computed, typically using a QR-based or a divide-and-conquer approach. The LAPACK routine GESDD, used in this study, implements the divide-and-conquer method, which typically achieves higher performance compared to the QR-based approach \cite{dongarra_singular_2018}. The cost of this process is of the order $\mathcal O(mn\min\{m,n\})$, which simplifies to $\mathcal O(m^2n)$ for wide matrices where $m < n$, or to $\mathcal O(mn^2)$ for tall matrices where $m > n$.
 
-The rSVD algorithm consists of two stages. In the first stage, an approximate orthogonal basis $Q$ of $A$ is constructed, and in the second stage, the SVD is approximated using the projection of $A$ onto $Q$. Algorithm 1, which is an implementation of both stages, has an computation cost of $\mathcal O(mnk)$, however, it is possible to achieve a cost of $\mathcal O(mn\log k)$ \cite{halko_finding_2011}.
-
+The rSVD algorithm consists of two stages. In the first stage, an approximate orthogonal basis $Q$ of $A$ is constructed, and in the second stage, the SVD is approximated using the projection of $A$ onto $Q$. The first stage of Algorithm \ref{alg:rsvd}, which constructs the orthogonal basis $Q$, has a cost of $\mathcal O(k^2m)$ as a result of the QR factorization. Stage two, the projection and construction of an approximate SVD, has a cost of $\mathcal O(mnk)$. The overall cost is therefore on the order of $\mathcal O(mnk)$. More efficient but less accurate algorithms for stage 2 are proposed, for instance Algorithm 5.2 in \cite{halko_finding_2011}, which relies on the interpolative decomposition (ID), and has a cost of $\mathcal O(mn\log k)$.
 
 
 \section{Results}\label{RE}
@@ -131,6 +135,12 @@ In this study, I use the condition numbers $\kappa = 3,\space 100,\space 1000$, 
 
 \subsection{Computation times}
 This section contains results on the computation time on rSVD and SVD.
+
+\begin{figure*}[tbp]
+    \centerline{\includegraphics[width=\textwidth]{wide_versus_tall.png}}
+    \caption{The median value of $t_{wide}$ divided by $t_{tall}$, which is the time of rSVD on wide data and on tall data, respectively. Here, three different cases: the small dataset (left), the medium dataset (middle) and the large dataset (right).}
+    \label{wideVsTall}
+\end{figure*}
 
 \begin{figure}[tbp]
     \centerline{\includegraphics[width=0.5\textwidth]{timing_all.png}}
