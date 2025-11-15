@@ -134,7 +134,7 @@ where the parameter $\alpha$ controls the rate of decay. The condition number is
 \end{equation}
 In this study, I use the condition numbers $\kappa_1 = 2$, $\kappa_2 = 50$, and $\kappa_3 = 1000$, which corresponds to slow, moderate and a rapid spectral decay (see Fig.~\ref{spectralDecay}). The singular values from \eqref{decay} are placed on the diagonal of $\Sigma$, and the test matrix is the result of $A = U\Sigma V^T$.
 
-The size of the test matrices are set to $n\times 5n$, for the values $n=100$, $n=500$, and $n=1000$, which I refer to as the small, medium and large case, respectively. For each combination of spectral decay (slow, moderate, rapid) and matrix size (small, medium, large), I generate $R$ random samples depending on the size, where $R=30$ for the small case, $R=15$ for the medium case, and $R=5$ for the large case. See Table~\ref{tab:matrixCount} for an overview.
+The size of the test matrices are set to $n\times 5n$, for the values $n_s=100$, $n_m=500$, and $n_l=1000$, which I refer to as the small, medium and large case, respectively. For each combination of spectral decay (slow, moderate, rapid) and matrix size (small, medium, large), I generate $R$ random samples depending on the size, where $R=30$ for the small case, $R=15$ for the medium case, and $R=5$ for the large case. See Table~\ref{tab:matrixCount} for an overview.
 
 \begin{table}[ht]
 \centering
@@ -160,8 +160,24 @@ The size of the test matrices are set to $n\times 5n$, for the values $n=100$, $
     \label{spectralDecay}
 \end{figure}
 
-\subsection{Computation times}
-This section contains results on the computation time on rSVD and SVD.
+\subsection{Effect of Matrix size on Computational Times}
+When computing the effect of the matrix size on the computational times, the median value is taken over all test matrices of a given size and over the three different spectral decays, as the condition number of the matrix does not affect the computation of the SVD and the rSVD (reference). The values is therefore the median over $90$ runs for the small case, $45$ runs for the medium case, and $15$ runs for the large case. The results, and the relative timings, can be seen in Figure~\ref{timeAll}.
+
+[TODO: insert table with some selected $k$, and the exact median computational time, which I may refer to.]
+
+For the small case, $n_s=100$, the computational time for the rSVD if much faster than for SVD for ranks $k<10$. For $k=10$ and above, SVD performs better, both on wide data and tall data.
+
+The medium case, where $n_m=500$, the computational time of SVD is higher for all values of $k$ compared to the rSVD. The difference between the two methods reduces as $k$ increases, and for $k=50$ rSVD is $20\%$ faster.
+
+\subsection{Effect of Spectral Decay on Approximation Error}
+
+\subsection{Effect of Matrix Shape}
+
+\begin{figure}[tbp]
+    \centerline{\includegraphics[width=0.5\textwidth]{timing_all.png}}
+    \caption{Median computation time for SVD and rSVD on wide data $A$ and tall data $A^T$ for increasing $k$ and $p=5$. Top row: time in seconds for SVD and rSVD. Bottom row: SVD computation time divided by rSVD computation time.}
+    \label{timeAll}
+\end{figure}
 
 \begin{figure*}[tbp]
     \centerline{\includegraphics[width=\textwidth]{wide_versus_tall.png}}
@@ -169,38 +185,12 @@ This section contains results on the computation time on rSVD and SVD.
     \label{wideVsTall}
 \end{figure*}
 
-\begin{figure}[tbp]
-    \centerline{\includegraphics[width=0.5\textwidth]{timing_all.png}}
-    \caption{Median computation time for SVD and rSVD on wide data $A$ of size $n\times 5n$, and on tall data $A^T$ of size $5n \times n$, for increasing $k$. Median taken over $R$ runs, depending on the data size. Top: $n=100$ and $R=30$. Middle: $n=500$ and $R=10$. Bottom: $n=1000$ and $R=5$.}
-    \label{timeAll}
-\end{figure}
 
-\begin{figure}[tbp]
-    \centerline{\includegraphics[width=0.5\textwidth]{speedups_all.png}}
-    \caption{Median speedup of rSVD compared to SVD for tall and wide data for small, medium and large matrices.}
-    \label{speedUp}
-\end{figure}
-
-
-\subsection{Errors}
-This section contains results on the errors produced by the rSVD and the SVD.
-
-\begin{figure}[tbp]
-    \centerline{\includegraphics[width=0.5\textwidth]{errors_raw.png}}
-    \caption{Average errors for rSVD and best possible error achieved by the SVD for different spectral decays and matrix sizes. The y-axis shows the $\ell_2$ operator norm, and the x-axis is the approximation rank $k$.}
-    \label{errorsRaw}
-\end{figure}
-
-\begin{figure}[tbp]
-    \centerline{\includegraphics[width=0.5\textwidth]{errors_relative.png}}
-    \caption{The relative error of rSVD, in $\%$, compared to SVD, for different spectral decays and matrix sizes. The y-axis shows the $\%$-difference in $\ell_2$ operator norm, and the x-axis is the approximation rank $k$.}
-    \label{errorsRelative}
-\end{figure}
-
-
-\subsection{Error estimates}
-
-On errors related to SVD and rSVD.
+\begin{figure*}[tbp]
+    \centerline{\includegraphics[width=\textwidth]{errors_all.png}}
+    \caption{Average errors for rSVD and best possible error achieved by the SVD over a range of rank-$k$ approximates, for different spectral decays and matrix sizes. Top row: The $\ell_2$ error for both methods. Bottom row: the relative $\ell_2$ error for rSVD compared to SVD.}
+    \label{errorsAll}
+\end{figure*}
 
 
 \section{Discussion}\label{sec:discussion}
