@@ -167,18 +167,18 @@ The size of the test matrices are set to $n\times 5n$, for the values $n_s=100$,
 \caption{Computational time for rSVD relative to SVD at selected target ranks $k$ for small, medium, and large matrices.}
 \label{tab:times_all}
 \begin{tabular}{ccccccc}
-\toprule
-& \multicolumn{2}{c}{\textbf{Small}} & \multicolumn{2}{c}{\textbf{Medium}} & \multicolumn{2}{c}{\textbf{Large}} \\
-\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
-\textbf{$k$} & Wide & Tall & Wide & Tall & Wide & Tall \\
-\midrule
-5  & 13.03 & 13.03 & 6.15 & 6.15 & 24.79 & 24.79 \\
-15 & 0.41 & 0.41 & 4.22 & 4.22 & 15.27 & 15.27 \\
-25 & 0.21 & 0.21 & 2.69 & 2.69 & 11.53 & 11.53 \\
-35 & 0.20 & 0.20 & 2.51 & 2.51 & 10.59 & 10.59 \\
-45 & 0.20 & 0.20 & 2.39 & 2.39 & 9.41 & 9.41 \\
-50 & 0.19 & 0.19 & 2.27 & 2.27 & 9.41 & 9.41 \\
-\bottomrule
+    \toprule
+    & \multicolumn{2}{c}{\textbf{Small}} & \multicolumn{2}{c}{\textbf{Medium}} & \multicolumn{2}{c}{\textbf{Large}} \\
+    \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+    \textbf{$k$} & Wide & Tall & Wide & Tall & Wide & Tall \\
+    \midrule
+    5  & 13.03 & 13.03 & 6.15 & 6.15 & 24.79 & 24.79 \\
+    10 & 10.39 & 10.39 & 5.82 & 5.82 & 17.64 & 17.64 \\
+    20 & 0.21 & 0.21 & 2.91 & 2.91 & 12.72 & 12.72 \\
+    30 & 0.20 & 0.20 & 2.57 & 2.57 & 10.89 & 10.89 \\
+    40 & 0.20 & 0.20 & 2.45 & 2.45 & 10.01 & 10.01 \\
+    50 & 0.19 & 0.19 & 2.27 & 2.27 & 9.41 & 9.41 \\
+    \bottomrule
 \end{tabular}
 \end{table}
 
@@ -191,6 +191,24 @@ The medium case, where $n_m=500$, the computational time of SVD is higher for al
 \subsection{Effect of Spectral Decay on Approximation Error}
 
 \subsection{Effect of Matrix Shape}
+
+\begin{table}[ht]
+\centering
+\caption{Relative computational time for wide compared to tall data using rSVD at selected target ranks $k$ for small, medium, and large matrices.}
+\label{tab:s}
+\begin{tabular}{cccc}
+    \toprule
+    k & \textbf{Small} & \textbf{Medium} & \textbf{Large} \\
+    \midrule
+    5  & 0.79 & 0.42 & 0.67 \\
+    10 & 0.61 & 0.67 & 1.32 \\
+    20 & 0.89 & 1.20 & 1.20 \\
+    30 & 1.21 & 1.20 & 1.12 \\
+    40 & 1.61 & 1.20 & 1.04 \\
+    50 & 1.89 & 1.16 & 1.05 \\
+    \bottomrule
+\end{tabular}
+\end{table}
 
 \begin{figure}[tbp]
     \centerline{\includegraphics[width=0.5\textwidth]{timing_all.png}}
