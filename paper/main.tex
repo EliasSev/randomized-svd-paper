@@ -161,9 +161,28 @@ The size of the test matrices are set to $n\times 5n$, for the values $n_s=100$,
 \end{figure}
 
 \subsection{Effect of Matrix size on Computational Times}
-When computing the effect of the matrix size on the computational times, the median value is taken over all test matrices of a given size and over the three different spectral decays, as the condition number of the matrix does not affect the computation of the SVD and the rSVD (reference). The values is therefore the median over $90$ runs for the small case, $45$ runs for the medium case, and $15$ runs for the large case. The results, and the relative timings, can be seen in Figure~\ref{timeAll}.
 
-[TODO: insert table with some selected $k$, and the exact median computational time, which I may refer to.]
+\begin{table}[ht]
+\centering
+\caption{Computational time for rSVD relative to SVD at selected target ranks $k$ for small, medium, and large matrices.}
+\label{tab:times_all}
+\begin{tabular}{ccccccc}
+\toprule
+& \multicolumn{2}{c}{\textbf{Small}} & \multicolumn{2}{c}{\textbf{Medium}} & \multicolumn{2}{c}{\textbf{Large}} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+\textbf{$k$} & Wide & Tall & Wide & Tall & Wide & Tall \\
+\midrule
+5  & 13.03 & 13.03 & 6.15 & 6.15 & 24.79 & 24.79 \\
+15 & 0.41 & 0.41 & 4.22 & 4.22 & 15.27 & 15.27 \\
+25 & 0.21 & 0.21 & 2.69 & 2.69 & 11.53 & 11.53 \\
+35 & 0.20 & 0.20 & 2.51 & 2.51 & 10.59 & 10.59 \\
+45 & 0.20 & 0.20 & 2.39 & 2.39 & 9.41 & 9.41 \\
+50 & 0.19 & 0.19 & 2.27 & 2.27 & 9.41 & 9.41 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+When assessing the effect of the matrix size on the computational time, I compute the median value across all test matrices of a given size and across all three spectral decay sets, since the condition number of the matrix does not affect the computation cost of the SVD and the rSVD (reference). This results in medians computed over $90$ runs for the small case, $45$ runs for the medium case, and $15$ runs for the large case. The results, and the relative computational times for rSVD compared to SVD, can be seen in Figure~\ref{timeAll}, with selected relative values found in Table~\ref{tab:times_all}.
 
 For the small case, $n_s=100$, the computational time for the rSVD if much faster than for SVD for ranks $k<10$. For $k=10$ and above, SVD performs better, both on wide data and tall data.
 
