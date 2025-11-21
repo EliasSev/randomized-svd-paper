@@ -153,7 +153,6 @@ The size of the test matrices are set to $n\times 5n$, for the values $n_s=100$,
 }
 \end{table}
 
-
 \begin{figure}[tbp]
     \centerline{\includegraphics[width=0.50\textwidth]{singular_value_decay.png}}
     \caption{The slow, moderate, and rapid spectral decay used for the test matrix generation. In this figure, for $n=100$.}
@@ -161,6 +160,14 @@ The size of the test matrices are set to $n\times 5n$, for the values $n_s=100$,
 \end{figure}
 
 \subsection{Effect of Matrix size on Computational Times}
+
+\begin{figure*}[htbp]
+    \centerline{\includegraphics[width=\textwidth]{timing_all.png}}
+    \caption{Median computation time for SVD and rSVD on wide data $A$ and tall data $A^T$ for increasing $k$ and $p=5$. Top row: time in seconds for SVD and rSVD. Bottom row: SVD computation time divided by rSVD computation time.}
+    \label{timeAll}
+\end{figure*}
+
+When assessing the effect of the matrix size on the computational time, I compute the median value across all test matrices of a given size and across all three spectral decay sets, since the condition number of the matrix does not affect the computation cost of the SVD and the rSVD (reference). This results in medians computed over $90$ runs for the small case, $45$ runs for the medium case, and $15$ runs for the large case. The results, and the relative computational times for rSVD compared to SVD, can be seen in Figure~\ref{timeAll}, with selected relative values found in Table~\ref{tab:times_all}.
 
 \begin{table}[ht]
 \centering
@@ -172,25 +179,28 @@ The size of the test matrices are set to $n\times 5n$, for the values $n_s=100$,
     \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
     \textbf{$k$} & Wide & Tall & Wide & Tall & Wide & Tall \\
     \midrule
-    5  & 13.03 & 13.03 & 6.15 & 6.15 & 24.79 & 24.79 \\
-    10 & 10.39 & 10.39 & 5.82 & 5.82 & 17.64 & 17.64 \\
-    20 & 0.21 & 0.21 & 2.91 & 2.91 & 12.72 & 12.72 \\
-    30 & 0.20 & 0.20 & 2.57 & 2.57 & 10.89 & 10.89 \\
-    40 & 0.20 & 0.20 & 2.45 & 2.45 & 10.01 & 10.01 \\
-    50 & 0.19 & 0.19 & 2.27 & 2.27 & 9.41 & 9.41 \\
+    5  & 13.03 & 14.87 & 6.15 & 19.80 & 24.79 & 31.62 \\
+    10 & 10.39 & 13.59 & 5.82 & 8.03 & 17.64 & 11.53 \\
+    20 & 0.21 & 0.19 & 2.91 & 1.80 & 12.72 & 8.04 \\
+    30 & 0.20 & 0.13 & 2.57 & 1.57 & 10.89 & 7.58 \\
+    40 & 0.20 & 0.10 & 2.45 & 1.48 & 10.01 & 7.27 \\
+    50 & 0.19 & 0.08 & 2.27 & 1.46 & 9.41 & 6.92 \\
     \bottomrule
 \end{tabular}
 \end{table}
 
-When assessing the effect of the matrix size on the computational time, I compute the median value across all test matrices of a given size and across all three spectral decay sets, since the condition number of the matrix does not affect the computation cost of the SVD and the rSVD (reference). This results in medians computed over $90$ runs for the small case, $45$ runs for the medium case, and $15$ runs for the large case. The results, and the relative computational times for rSVD compared to SVD, can be seen in Figure~\ref{timeAll}, with selected relative values found in Table~\ref{tab:times_all}.
+For the small case, $n_s=100$, the median computational time for the SVD is 0.025 and 0.021 seconds for wide and tall data, respectively. The computational time for the rSVD if much faster than for SVD for small ranks, $k<10$. For $k=10$ and above, SVD performs better, both on wide data and tall data. The rSVD has the lowest time for small target ranks $k$, and as the rank increases, the computational time increases.
 
-For the small case, $n_s=100$, the computational time for the rSVD if much faster than for SVD for ranks $k<10$. For $k=10$ and above, SVD performs better, both on wide data and tall data.
+The medium case, where $n_m=500$, the computational time of SVD is higher for all values of $k$ compared to the rSVD. The median computational time for SVD is 0.77 seconds for wide data and 0.57 seconds for tall data. The difference between the two methods reduces as $k$ increases and the computation time for rSVD approaches that of SVD.
 
-The medium case, where $n_m=500$, the computational time of SVD is higher for all values of $k$ compared to the rSVD. The difference between the two methods reduces as $k$ increases, and for $k=50$ rSVD is $20\%$ faster.
+For large matrices, with size $n_s = 1000$, the median computational time using the SVD is 4.05 seconds on wide data and 3.15 seconds on tall data. As can be seen in Table~\ref{tab:times_all}, the relative time for rSVD compared to SVD is between 7 times and 32 times as fast, with the greatest speed-up seen for low target ranks.
 
-\subsection{Effect of Spectral Decay on Approximation Error}
+Comparing the effect of the matrix size, we see that the advantage, in terms of the relative computational time, is greater for larger matrix sizes, both for wide and tall data. In general, a greater advantage is seen on wide data for small matrices, with a greater advantage on tall data for larger ranks, compared to the SVD.
+
 
 \subsection{Effect of Matrix Shape}
+
+Comparing the computational time of rSVD on wide data, $t_{wide}$, to tall data, $t_{tall}$, I look at the ratio $t_{wide} / t_{tall}$ to assess the advantage of performing the method on wide versus tall data. If this value is greater than 1, then $t_{wide} > t_{tall}$, and hence rSVD performs quicker on tall data compared to wide data. 
 
 \begin{table}[ht]
 \centering
@@ -210,11 +220,9 @@ The medium case, where $n_m=500$, the computational time of SVD is higher for al
 \end{tabular}
 \end{table}
 
-\begin{figure}[tbp]
-    \centerline{\includegraphics[width=0.5\textwidth]{timing_all.png}}
-    \caption{Median computation time for SVD and rSVD on wide data $A$ and tall data $A^T$ for increasing $k$ and $p=5$. Top row: time in seconds for SVD and rSVD. Bottom row: SVD computation time divided by rSVD computation time.}
-    \label{timeAll}
-\end{figure}
+
+\subsection{Effect of Spectral Decay on Approximation Error}
+
 
 \begin{figure*}[tbp]
     \centerline{\includegraphics[width=\textwidth]{wide_versus_tall.png}}
