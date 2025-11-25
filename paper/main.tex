@@ -110,7 +110,6 @@ Let $A\in\mathbb R^{m\times n}$, and pick a target rank $k\ge 2$ and an oversamp
 where $\mathbb E$ denotes the expected value. A proof of this can be found in \cite{halko_finding_2011}. It is always the case that $\gamma_k > 1$, and for \eqref{rsvdError} to give a good upper bound, the singular values $\sigma_k$ must approach zero faster than $\gamma_k$ increases.
 
 
-
 \subsection{Computational cost}
 Assume that $A\in\mathbb R^{m\times n}$. Standard implementations of the SVD in linear algebra libraries like LAPACK or ScaLAPACK are based on two stage algorithms. In the first stage, $A$ is reduced to a bi-diagonal form through Householder transformations or Gives rotations. In the second stage, the SVD of the bidiagonal matrix if computed, typically using a QR-based or a divide-and-conquer approach. The LAPACK routine GESDD, used in this study, implements the divide-and-conquer method, which typically achieves higher performance compared to the QR-based approach \cite{dongarra_singular_2018}. The cost of this process is of the order $\mathcal O(mn\min\{m,n\})$, which simplifies to $\mathcal O(m^2n)$ for wide matrices where $m < n$, or to $\mathcal O(mn^2)$ for tall matrices where $m > n$.
 
@@ -121,13 +120,11 @@ The rSVD algorithm consists of two stages. In the first stage, an approximate or
 
 
 \subsection{Test matrix construction}
-
 \begin{figure}[hbp]
     \centerline{\includegraphics[width=0.50\textwidth]{singular_value_decay.png}}
     \caption{The slow, moderate, and rapid spectral decay used for the test matrix generation. In this figure, for $n=100$.}
     \label{spectralDecay}
 \end{figure}
-
 \begin{figure*}[htbp]
     \centerline{\includegraphics[width=\textwidth]{timing_all.png}}
     \caption{Median computation time for SVD and rSVD on wide data $A$ and tall data $A^T$ for increasing $k$ and $p=5$. Top row: time in seconds for SVD and rSVD. Bottom row: SVD computation time divided by rSVD computation time.}
@@ -149,7 +146,6 @@ where the parameter $\alpha$ controls the rate of decay. The condition number is
 In this study, I use the condition numbers $\kappa_1 = 2$, $\kappa_2 = 50$, and $\kappa_3 = 1000$, which corresponds to slow, moderate and a rapid spectral decay (see Fig.~\ref{spectralDecay}). The singular values from \eqref{decay} are placed on the diagonal of $\Sigma$, and the test matrix is the result of $A = U\Sigma V^T$.
 
 The size of the test matrices are set to $n\times 5n$, for the values $n_s=100$, $n_m=500$, and $n_l=1000$, which I refer to as the small, medium and large case, respectively. For each combination of spectral decay (slow, moderate, rapid) and matrix size (small, medium, large), I generate $R$ random samples depending on the size, where $R=30$ for the small case, $R=15$ for the medium case, and $R=5$ for the large case. See Table~\ref{tab:matrixCount} for an overview.
-
 \begin{table}[ht]
 \centering
 \caption{Number of test matrices used for each combination of matrix size and spectral decay.}
@@ -166,17 +162,16 @@ The size of the test matrices are set to $n\times 5n$, for the values $n_s=100$,
 \end{tabular}
 }
 \end{table}
-
 \begin{figure*}[htbp]
     \centerline{\includegraphics[width=\textwidth]{wide_versus_tall.png}}
     \caption{The median value of $t_{wide}$ divided by $t_{tall}$, which is the time of rSVD on wide data and on tall data, respectively. Here, three different cases: the small dataset (left), the medium dataset (middle) and the large dataset (right).}
     \label{wideVsTall}
 \end{figure*}
 
+
 \subsection{Effect of Matrix size on Computational Times}
 
 When assessing the effect of the matrix size on the computational time, I compute the median value across all test matrices of a given size and across all three spectral decay sets, since the condition number of the matrix does not affect the computation cost of the SVD and the rSVD (reference). This results in medians computed over $90$ runs for the small case, $45$ runs for the medium case, and $15$ runs for the large case. The results, and the relative computational times for rSVD compared to SVD, can be seen in Figure~\ref{timeAll}, with selected relative values found in Table~\ref{tab:times_all}.
-
 \begin{table}[ht]
 \centering
 \caption{Computational time for rSVD relative to SVD at selected target ranks $k$ for small, medium, and large matrices.}
@@ -204,7 +199,6 @@ The medium case, where $n_m=500$, the computational time of SVD is higher for al
 For large matrices, with size $n_s = 1000$, the median computational time using the SVD is 4.05 seconds on wide data and 3.15 seconds on tall data. As can be seen in Table~\ref{tab:times_all}, the relative time for rSVD compared to SVD is between 7 times and 32 times as fast, with the greatest speed-up seen for low target ranks.
 
 Comparing the effect of the matrix size, we see that the advantage, in terms of the relative computational time, is greater for larger matrix sizes, both for wide and tall data. In general, a greater advantage is seen on wide data for small matrices, with a greater advantage on tall data for larger ranks, compared to the SVD.
-
 \begin{table}[ht]
 \centering
 \caption{Relative computational time for wide compared to tall data using rSVD at selected target ranks $k$ for small, medium, and large matrices.}
@@ -223,15 +217,21 @@ Comparing the effect of the matrix size, we see that the advantage, in terms of 
 \end{tabular}
 \end{table}
 
-
 \subsection{Effect of Matrix Shape}
 Comparing the computational time of rSVD on wide data, $t_{wide}$, to tall data, $t_{tall}$, I look at the ratio $t_{wide} / t_{tall}$ to assess the advantage of performing the method on wide versus tall data. If this value is greater than 1, then $t_{wide} > t_{tall}$, and hence rSVD performs quicker on tall data compared to wide data. The results can be seen in Fig.~\ref{wideVsTall}, and some selected ranks in Table~\ref{tab:times_tall_wide}.
 
 For small values of the target rank $k$, the rSVD performs faster on wide data than for tall data. For $k$ 22, 14, and 8, the performance is faster on wide data than on tall data for the small, medium, and large case, respectively.
 
-For larger values of $k$, rSVD performs better on tall data, and the advantage increases as $k$ increases, as can be seen on the left plot in Fig.~\ref{wideVsTall}. The middle plot, for medium sized matrices, shows that rSVD performs better on tall data above $k=14$ with approximately 20\%, with not much difference as $k$ increases. The right plot shows that when $k$ is greater than 8, the method is faster on tall data, but the advantage decreases and approaches 1 as $k$ gets closer to 50.
+For larger values of $k$, rSVD performs better on tall data, and the advantage increases as $k$ increases, as can be seen on the left plot in Fig.~\ref{wideVsTall}. The middle plot, for medium sized matrices, shows that rSVD performs better on tall data for ranks above $k=14$ with approximately 20\%, with not much difference as $k$ increases. The right plot shows that when $k$ is greater than 8, the method is faster on tall data, but the advantage decreases and approaches 1 as $k$ gets closer to 50.
+
+In general, the computational time of rSVD if faster on wide data for small values of $k$, and faster on tall data for larger ranks. In addition, for larger matrices, the advantage of performing rSVD on tall data decreases as $k$ gets larger, while the advantage increases for smaller data.
+
 
 \subsection{Effect of Spectral Decay on Approximation Error}
+
+The computation of error is done using the $\ell_2$ operator norm, and using the average value across all test matrices of a given size and spectral decay type. The spectral decay of a matrix does not change if it is transposed, and the rSVD method yield approximately the same results on the transpose of the data. The results are therefore done using the wide data, as the results are equivalent on the transposed case.
+
+
 
 \begin{table}[ht]
 \centering
