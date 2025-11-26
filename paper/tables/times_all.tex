@@ -1,0 +1,19 @@
+\begin{table}[ht]
+\centering
+\caption{Computational time for rSVD relative to SVD at selected target ranks $k$ for small, medium, and large matrices.}
+\label{tab:times_all}
+\begin{tabular}{ccccccc}
+    \toprule
+    & \multicolumn{2}{c}{\textbf{Small}} & \multicolumn{2}{c}{\textbf{Medium}} & \multicolumn{2}{c}{\textbf{Large}} \\
+    \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+    \textbf{$k$} & Wide & Tall & Wide & Tall & Wide & Tall \\
+    \midrule
+    5  & 13.03 & 14.87 & 6.15 & 19.80 & 24.79 & 31.62 \\
+    10 & 10.39 & 13.59 & 5.82 & 8.03 & 17.64 & 11.53 \\
+    20 & 0.21 & 0.19 & 2.91 & 1.80 & 12.72 & 8.04 \\
+    30 & 0.20 & 0.13 & 2.57 & 1.57 & 10.89 & 7.58 \\
+    40 & 0.20 & 0.10 & 2.45 & 1.48 & 10.01 & 7.27 \\
+    50 & 0.19 & 0.08 & 2.27 & 1.46 & 9.41 & 6.92 \\
+    \bottomrule
+\end{tabular}
+\end{table}
