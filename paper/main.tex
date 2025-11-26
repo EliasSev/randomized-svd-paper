@@ -158,37 +158,79 @@ Fig.~\ref{timeAll} shows the absolute run times (top row) and the relative speed
 
 
 \subsubsection{Effect of matrix shape}
-To assess the influence of matrix shape, I compare the median computational time of rSVD on wide matrices ($t_{wide}$) versus tall matrices ($t_{tall}$) by looking at the ratio $t_{wide} / t_{tall}$, see Fig~\ref{wideVsTall} and Table~\ref{tab:times_tall_wide}. For small target ranks, rSVD has a faste runtime on wide matrices across all matrix sizes. The crossover, where rSVD becomes faster on tall matrices, decreases with increasing matrix size, occurring at ranks 22, 14, and 8, for small, medium, and large matrices, respectively. For small matrices, once this crossover rank is exceeded, the relative advantage of tall matrices grows as $k$ approaches 50. For medium sized matrices, the relative speedup on tall matrices remains approximately constant once the rank surpasses the crossover point. For large matrices, the advantage of tall matrices diminishes as $k$ increases passed the crossover point.
-
+To assess the influence of matrix shape, I compare the median computational time of rSVD on wide matrices ($t_{wide}$) versus tall matrices ($t_{tall}$) by looking at the ratio $t_{wide} / t_{tall}$, see Fig~\ref{wideVsTall} and Table~\ref{tab:times_tall_wide}. For small target ranks, rSVD has a fast runtime on wide matrices across all matrix sizes. The crossover, where rSVD becomes faster on tall matrices, decreases with increasing matrix size, occurring at ranks 22, 14, and 8, for small, medium, and large matrices, respectively. For small matrices, once this crossover rank is exceeded, the relative advantage of tall matrices grows as $k$ approaches 50. For medium sized matrices, the relative speedup on tall matrices remains approximately constant once the rank surpasses the crossover point. For large matrices, the advantage of tall matrices diminishes as $k$ increases passed the crossover point.
 \input{tables/times_tall_wide.tex}
+
+
+\subsection{Approximation Error}
 \input{figures/errors_all.tex}
 
-
-\subsection{Effect of Spectral Decay on Approximation Error}
+The computation of error is done using the $\ell_2$ operator norm, $\|A - A_k\|_2$, where $A_k$ denotes the rank-$k$ approximation of $A$. For each combination of matrix size and spectral decay profile, the average error is computed across all generated test matrices. Since transposing a matrix does not change its singular values, and since the rSVD produces essentially identical approximations on $A$ and $A^T$, all error analyses are reported for the wide data only. The results are summarized in Fig.~\ref{errorsAll} and Table~\ref{tab:errors}, showing the three spectral decay profiles (slow, moderate, rapid) and the three matrix sizes ($n_s$, $n_m$, $n_l$).
 \input{tables/errors.tex}
 
-The computation of error is done using the $\ell_2$ operator norm, and using the average value across all test matrices of a given size and spectral decay type. The spectral decay of a matrix does not change if it is transposed, and the rSVD method yield approximately the same results on the transpose of the data. The results are therefore done using the wide data, as the results are equivalent on the transposed case. The results of the experiments can be seen in Fig.~\ref{errorsAll} and Table~\ref{tab:errors}. There are three cases corresponding to the three spectral decay sequences of slow, moderate and rapid decay. For each such case, I again look at the small, medium, and large data matrices, denoted $n_s$, $n_m$, and $n_l$, respectively.
 
-For matrices with slowly decaying singular values, seen in the left column of Fig.~\ref{errorsAll}, the error is larger compared to the moderate and rapidly decaying case. The error is slowly reducing, and staying close to the theoretically lowest achieveable error from the SVD approximations. The error relative to the SVD is smallest for small ranks, and increasing almost linearly. The relative error of rSVD compared to SVD is best for large matrices for all ranks, and worst for small matrices.
+\subsubsection{Effect of spectral decay}
+Fig.~\ref{errorsAll} shows the absolute approximation error (top row) and the relative error of rSVD compared with SVD (bottom row). As expected, the absolute error is largest for matrices with slowly decaying singular values, both for the rSVD and the SVD, with the errors decreasing as $k$ increases. For rapidly decaying spectra, the approximation errors drops much more quickly with increasing rank.
+
+In terms of relative error, rSVD performs worst under rapid spectral decay, although the relative error levels off as $k$ approaches 50. For slow decay, however, the relative error increases approximately linearly with $k$. For the moderate decay case, a middle ground is observed: where initially more linear increase is seen, which start to level off when $k$ gets closer to 50.
+
+
+\subsubsection{Effect of matrix size}
+To assess the effect of matrix size, approximation errors of different matrix sizes are shown in Fig.~\ref{errorsAll}, and relative errors for selected ranks are given in Table~\ref{tab:errors}. As expected, the errors increases with both the matrix size and the target rank $k$. On the contrary, the relative error between the rSVD and the SVD is largest for small matrices, and decreasing with size. Moreover, the difference between slow-, moderate-, and fast-decaying spectra is largest for small matrices: slowly decaying singular values produce significantly higher relative errors.
 
 
 \section{Discussion}\label{sec:discussion}
-This section contains discussion.
+
+\subsection{Summary of Findings}
+% short recap of key performance + error trends
+
+\subsection{Interpretation of Computational Performance}
+% explain why large matrices help rSVD
+% why wide vs tall differs
+% why crossover rank behaves as observed
+
+\subsection{Interpretation of Approximation Error}
+% connect slow/rapid decay behavior to theory
+% explain why relative error varies differently
+% discuss influence of k and decay rate
+
+\subsection{Practical Implications}
+% when to use rSVD, when not
+% guidance on selecting k or understanding decay
+
+\subsection{Limitations and Future Directions}
+% synthetic data, p=5, no power iterations, etc.
+
 
 \section{Conclusion}\label{sec:conclusion}
-This section contains the conclusion.
+% Paragraph 1: What, why and setup
+% Paragraph 2: Computational performance, errors (absolute, relative), key crossover or threshold behaviors
+% Paragraph 3: Practical takeaways (when rSVD, when SVD, etc.)
+% Paragraph 4: Future work
+This study investigated\dots
+
+The results showed that\dots
+
+From a practical perspective\dots
+
+Future work may consider\dots
 
 \bibliographystyle{plain}  % or 'unsrt', 'alpha', 'ieeetr', etc.
 \bibliography{references}
 
+
 \section*{Appendix}
+
+
 \paragraph{Operator norm}\label{MatrixNorms}
 The $\ell_2$ operator norm of $A\in\mathbb R^{m\times n}$ is the smallest $c\in\mathbb R$ such that $\|Ax\|\le c\|x\|$ for all $x\in \mathbb R^n$, denoted $\|A\|_2$. It is a well known result that
 \begin{equation*}
     \|A\|_2 = \sup_{\|x\| = 1}\|Ax\|,
 \end{equation*}
 for instance, see Lemma 2.7-2 in \cite{kreyszig_functional_1991}.
+
+
 \paragraph{QR factorization}\label{QRFact}
-The QR factorization of $A\in\mathbb R^{m\times b}$ is a decomposition $A = QR$, where $Q\in\mathbb R^{m\times n}$ has orthonormal columns and $R\in\mathbb R^{n\times n}$ is upper diagonal. The matrix $Q$ forms an orthonormal basis for $A$.
+The QR factorization of $A\in\mathbb R^{m\times b}$ is a decomposition $A = QR$, where $Q\in\mathbb R^{m\times n}$ has orthonormal columns and $R\in\mathbb R^{n\times n}$ is upper diagonal. The matrix $Q$ forms an orthonormal basis for $\text{range}(A)$.
 
 \end{document}
