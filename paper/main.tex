@@ -121,13 +121,9 @@ Assume that $A\in\mathbb R^{m\times n}$. Standard implementations of the SVD in 
 The rSVD algorithm consists of two stages. In the first stage, an approximate orthogonal basis $Q$ of $A$ is constructed, and in the second stage, the SVD is approximated using the projection of $A$ onto $Q$. The first stage of Algorithm \ref{alg:rsvd}, which constructs the orthogonal basis $Q$, has a cost of $\mathcal O(k^2m)$ as a result of the QR factorization. Stage two, the projection and construction of an approximate SVD, has a cost of $\mathcal O(mnk)$. The overall cost is therefore on the order of $\mathcal O(mnk)$. More efficient but less accurate algorithms for stage 2 are proposed, for instance Algorithm 5.2 in \cite{halko_finding_2011}, which relies on the interpolative decomposition (ID), and has a cost of $\mathcal O(mn\log k)$.
 
 
-\section{Results}\label{sec:results}
-
-
-\subsection{Test matrix construction}
+\section{Methods}\label{sec:methods}
 \input{figures/spectral_decay.tex}
 \input{figures/timing_all.tex}
-
 To compare the performance of the SVD and the rSVD on matrices with different spectral decay profiles, I generate random test matrices $A=U\Sigma V^T$, where $U$ and $V$ are random orthogonal matrices, and $\Sigma$ is a diagonal matrix with prescribed singular values $\{\sigma_1, \dots, \sigma_n\}$.
 
 Each orthogonal matrix is constructed by drawing a random $n\times n$ matrix $\Omega$ with independent elements from the standard normal distribution, performing a QR decomposition $\Omega = \tilde QR$, and correcting the signs of the orthogonal columns with $Q = \tilde Q\Lambda$, where $\Lambda = \text{diag}(\text{sign}(R_{ii}))$,  so that the diagonal elements or $R$ are positive. This procedure generates random orthogonal matrices uniformly distributed over the orthogonal group (Haar measure) \cite{mezzadri_how_2007}.
@@ -143,8 +139,10 @@ where the parameter $\alpha$ controls the rate of decay. The condition number is
 In this study, I use the condition numbers $\kappa_1 = 2$, $\kappa_2 = 50$, and $\kappa_3 = 1000$, which corresponds to slow, moderate and a rapid spectral decay (see Fig.~\ref{spectralDecay}). The singular values from \eqref{decay} are placed on the diagonal of $\Sigma$, and the test matrix is the result of $A = U\Sigma V^T$.
 
 The size of the test matrices are set to $n\times 5n$, for the values $n_s=100$, $n_m=500$, and $n_l=1000$, which I refer to as the small, medium and large case, respectively. For each combination of spectral decay (slow, moderate, rapid) and matrix size (small, medium, large), I generate $R$ random samples depending on the size, where $R=30$ for the small case, $R=15$ for the medium case, and $R=5$ for the large case. See Table~\ref{tab:matrixCount} for an overview.
-
 \input{tables/matrix_count.tex}
+
+
+\section{Results}\label{sec:results}
 \input{figures/wide_vs_tall.tex}
 \input{tables/times_all.tex}
 
@@ -182,13 +180,16 @@ To assess the effect of matrix size, approximation errors of different matrix si
 \section{Discussion}\label{sec:discussion}
 \input{figures/expected_error.tex}
 
-\subsection{Summary of Findings}
-% short recap of key performance + error trends
 
 \subsection{Interpretation of Computational Performance}
-% explain why large matrices help rSVD
-% why wide vs tall differs
-% why crossover rank behaves as observed
+% Why large matrices and small k help rSVD
+The results show that rSVD achieves its greatest speedup compared to the SVD on matrices of large size, and this speedup is greatest for small target ranks $k$. This can be explained by the computational complexity of the rSVD, $\mathcal O(n^2k)$, compared to SVDs complexity of $\mathcal O(n^2)$, assuming a matrix of shape $n\times 5n$. As $k$ approaches $n$, the complexity will be approximately $\mathcal O(n^3)$, and the additional computations in the rSVD are no longer beneficial, as was seen for small matrices with target ranks close to 50.
+
+% Why for small k, wide matrices are best
+Additionally, for small target ranks $k$, rSVD performs faster on wide matrices than on tall matrices. This can be understood by looking at the dominant costs of Algorithm \ref{alg:rsvd}.
+The first stage constructs of an approximate orthonormal basis $Q$ involves performing a QR-decomposition on the $m\times k$ matrix $Y$, at a cost of $\mathcal O(k^2m)$. The second stage involves forming the projected matrix $B = Q^T A$ with cost $\mathcal O(k m n)$, and computing the SVD of $B$, which costs $\mathcal O(k^2 n)$.
+Although the overall cost of Algorithm \ref{alg:rsvd} scales as $\mathcal O(kmn)$, the contribution of the quadratic terms $\mathcal O(k^2m)$ and $\mathcal O(k^2n)$ decides whether tall or wide matrices are more efficient. Specifically, for wide matrices where $m \ll n$, the SVD of $B$ dominates and $\mathcal O(k^2n) > \mathcal O (k^2m)$. Conversely, for tall matrices where $m \gg n$, the QR decomposition dominates. The observed crossover rank, at which tall matrices become faster, is a balance between these two terms, and depends on both the matrix dimensions and the target rank $k$.
+
 
 \subsection{Interpretation of Approximation Error}
 % connect slow/rapid decay behavior to theory
