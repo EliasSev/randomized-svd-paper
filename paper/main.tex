@@ -84,8 +84,7 @@ where $U$ is an $m \times m$ orthogonal matrix, $\Sigma$ is an $m\times n$ diago
 
 \subsection{The randomized SVD}
 Randomized singular value decomposition (rSVD) is a technique used to approximate the rank-$k$ approximation of an $m\times n$ matrix without computing the SVD. The core idea is to use random sampling to find a low-rank matrix $Q$ which approximates the range of $A$, project $A$ onto $Q$, and compute the SVD of the projection. The projection $Y=Q^TA$ will with a high probability capture the dominant directions of $A$, and the SVD of $Y$ will yield a good approximation \cite{halko_finding_2011}. This procedure is summarized in Algorithm \ref{alg:rsvd}. Note that the approximation $A\approx QQ^T A$ and the approximate factorization $A\approx U\Sigma V^T$ produced by rSVD have the same error. This can be seen by observing that $QQ^TA = QB = Q\tilde U\Sigma V^T$, and setting $U=Q\tilde U$.
-
-\begin{algorithm}[!t]
+\begin{algorithm}[!h]
 \caption{rSVD}
 \label{alg:rsvd}
 \begin{algorithmic}[1]
@@ -99,6 +98,7 @@ Randomized singular value decomposition (rSVD) is a technique used to approximat
     \State Set $U = Q\tilde U$. 
 \end{algorithmic}
 \end{algorithm}
+
 
 \subsection{Error estimates}
 In 1936, C. Eckart and G. Young showed that the solution to \eqref{probForm1} is $X = U_k\Sigma_k V_k^T$, where $U_k$ and $V_k$ consists of the $k$ first left and right singular vectors of $A$, respectively, and $\Sigma_k$ the $k$ first singular values of $A$ \cite{eckart_approximation_1936}. This is known as the Eckart–Young–Mirsky theorem. Alternatively, the solution $Q$ of \eqref{probForm2} consists of the $k$ first left singular values of $A$. This implies that
@@ -180,6 +180,7 @@ To assess the effect of matrix size, approximation errors of different matrix si
 
 
 \section{Discussion}\label{sec:discussion}
+\input{figures/expected_error.tex}
 
 \subsection{Summary of Findings}
 % short recap of key performance + error trends
@@ -219,18 +220,52 @@ Future work may consider\dots
 \bibliography{references}
 
 
-\section*{Appendix}
+\appendix
+\renewcommand{\theequation}{A\arabic{equation}}
+\setcounter{equation}{0}
 
 
-\paragraph{Operator norm}\label{MatrixNorms}
+\subsection{Operator norm}\label{A:operator_norm}
 The $\ell_2$ operator norm of $A\in\mathbb R^{m\times n}$ is the smallest $c\in\mathbb R$ such that $\|Ax\|\le c\|x\|$ for all $x\in \mathbb R^n$, denoted $\|A\|_2$. It is a well known result that
-\begin{equation*}
+\begin{equation}\label{l2_1}
     \|A\|_2 = \sup_{\|x\| = 1}\|Ax\|,
-\end{equation*}
-for instance, see Lemma 2.7-2 in \cite{kreyszig_functional_1991}.
+\end{equation}
+for instance, see Lemma 2.7-2 in \cite{kreyszig_functional_1991}. Additionally, it can be shown that
+\begin{equation}\label{l2_2}
+    \|A\|_2 = \sigma_1,
+\end{equation}
+where $\sigma_1$ is the largest singular value of $A$. See Theorem 6 Section 7.2 in \cite{lay_linear_2022} for a proof. Equation \eqref{l2_2} is used when computing $\|A\|_2$ in practice.
 
 
-\paragraph{QR factorization}\label{QRFact}
+\subsection{QR factorization}\label{A:QR_factorization}
 The QR factorization of $A\in\mathbb R^{m\times b}$ is a decomposition $A = QR$, where $Q\in\mathbb R^{m\times n}$ has orthonormal columns and $R\in\mathbb R^{n\times n}$ is upper diagonal. The matrix $Q$ forms an orthonormal basis for $\text{range}(A)$.
+
+
+\subsection{Givens rotation}
+Givens rotation is a rotation in the plane by an angle $\theta$. The rotation is represented by a $2\times 2$ matrix $G$, given by
+\begin{equation}
+    G = 
+    \begin{bmatrix}
+        c & -s \\
+        s & c
+    \end{bmatrix},
+\end{equation}
+where $c = \cos\theta$ and $s = \sin\theta$. The method is named after Wallace Givens who introduced it in the 1950s. For instance, the method is mentioned in the abstract of \cite{householder_unitary_1958}.
+
+
+\subsection{Householder transformation}
+Let $v$ be a normal vector defining a hyperplane $\mathcal H$. The Householder transformation of a point $x$ is a linear transformation $x\mapsto Px$ representing a reflection about $\mathcal H$, where $P$ is the Householder matrix, given by 
+\begin{equation}
+    P = I - 2uu^T,\quad u = \frac{v}{\|v\|}.
+\end{equation}
+The transformation was described by Alston S. Householder in a 1958 paper \cite{householder_unitary_1958}.
+
+
+\subsection{Interpolative decomposition}
+Let $A\in\mathbb R^{m\times n}$ be of rank $k$. The ID of $A$ is a factorization of the form
+\begin{equation}
+    A = A_{(:,J)}X,
+\end{equation}
+where $J\subset \{1,\dots,n\}$ is an index set of $k$ indices, $A_{(:,J)}$ a matrix made up of the $J$'s columns of $A$, and $X$ a matrix where $X_{(:,J)}=I_k$. See Section (3.2.3) in \cite{halko_finding_2011}.
 
 \end{document}
