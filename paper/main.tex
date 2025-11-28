@@ -103,17 +103,20 @@ Randomized singular value decomposition (rSVD) is a technique used to approximat
 
 \subsection{Error estimates}
 In 1936, C. Eckart and G. Young showed that the solution to \eqref{probForm1} is $X = U_k\Sigma_k V_k^T$, where $U_k$ and $V_k$ consists of the $k$ first left and right singular vectors of $A$, respectively, and $\Sigma_k$ the $k$ first singular values of $A$ \cite{eckart_approximation_1936}. This is known as the Eckart–Young–Mirsky theorem. Alternatively, the solution $Q$ of \eqref{probForm2} consists of the $k$ first left singular values of $A$. This implies that
-\begin{equation}\label{svdError}
+\begin{equation}\label{eq:svd_error}
     \min_{\text{rank}(X)\le k} \|A - X \|_2 = \sigma_{k+1},
 \end{equation}
-where $\sigma_{k+1}$ is the $(k+1)$th singular value of $A$. Equation \eqref{svdError} says that any rank-$k$ approximation of $A$ can not have an error smaller than $\sigma_{k+1}$.
+where $\sigma_{k+1}$ is the $(k+1)$th singular value of $A$. Equation \eqref{eq:svd_error} says that any rank-$k$ approximation of $A$ can not have an error smaller than $\sigma_{k+1}$.
 
-Let $A\in\mathbb R^{m\times n}$, and pick a target rank $k\ge 2$ and an oversampling parameter $p\ge 2$, where $p+k\le\min\{m,n\}$. Draw a random matrix $\Omega\in\mathbb R^{m\times (k+p)}$, with iid elements from the standard normal distribution, and use Alg. \ref{alg:rsvd} to obtain a rank-$k$ approximation $X = U\Sigma V^T$. Then
-\begin{eqnarray}\label{rsvdError}
-\mathbb E\|A - X\|_2 \le \gamma_k \sigma_{k+1}, \\
-\gamma_k = \left[ 1 + \frac{4 \sqrt{k+p}}{p-1} \sqrt{\min\{m,n\}} \right],
-\end{eqnarray}
-where $\mathbb E$ denotes the expected value. A proof of this can be found in \cite{halko_finding_2011}. It is always the case that $\gamma_k > 1$, and for \eqref{rsvdError} to give a good upper bound, the singular values $\sigma_k$ must approach zero faster than $\gamma_k$ increases.
+Let $A\in\mathbb R^{m\times n}$, and pick a target rank $k\ge 2$ and an oversampling parameter $p\ge 2$, where $p+k\le\min\{m,n\}$. Draw a random matrix $\Omega\in\mathbb R^{m\times (k+p)}$, with independent and identically distributed (IID) elements from the standard normal distribution, and use Alg. \ref{alg:rsvd} to obtain a rank-$k$ approximation $X = U\Sigma V^T$. Then,
+\begin{equation}\label{eq:rsvd_error}
+\begin{split}
+    \mathbb E\|A - X\|_2 \le& \\
+    \left( 1 + \sqrt{\frac{k}{p-1}} \right)\sigma_{k+1} +
+    \frac{e\sqrt{k+p}}{p}\sqrt{\sum_{j=k+1}^{\min\{m,n\}}\sigma_j^2},
+\end{split}
+\end{equation}
+where $\sigma_j$ is the $j$th singular value of $A$, $e$ is Euler's constant, and $\mathbb E$ denotes the expected value. For a proof, see Theorem 10.5 in \cite{halko_finding_2011}.
 
 
 \subsection{Computational cost}
@@ -124,12 +127,12 @@ The rSVD algorithm consists of two stages. In the first stage, an approximate or
 
 \section{Methods}\label{sec:methods}
 \input{figures/spectral_decay.tex}
-
-
+\input{figures/run_times_absolute.tex}
 \subsection{Test matrix generation}
 To compare the performance of the SVD and the rSVD on matrices with different spectral decay profiles, I generate random test matrices $A=U\Sigma V^T$, where $U$ and $V$ are random orthogonal matrices, and $\Sigma$ is a diagonal matrix with prescribed singular values $\{\sigma_1, \dots, \sigma_n\}$.
 
 Each orthogonal matrix is constructed by drawing a random $n\times n$ matrix $\Omega$ with independent elements from the standard normal distribution, performing a QR decomposition $\Omega = \tilde QR$, and correcting the signs of the orthogonal columns with $Q = \tilde Q\Lambda$, where $\Lambda = \text{diag}(\text{sign}(R_{ii}))$,  so that the diagonal elements or $R$ are positive. This procedure generates random orthogonal matrices uniformly distributed over the orthogonal group (Haar measure) \cite{mezzadri_how_2007}.
+
 
 To investigate how spectral decay affects accuracy, three sets of prescribed singular values are used. I use the polynomially decaying sequence of the form
 \begin{equation}\label{decay}
@@ -145,6 +148,7 @@ The size of the test matrices are set to $n\times 5n$, for the values $n_s=100$,
 \input{tables/matrix_count.tex}  % TABLE I
 
 
+
 \subsection{Computational environment}
 All experiments were performed on a laptop running Fedora Linux 43 with Linux kernel version 6.17. The system was running on an Intel(R) Core(TM) i7-10510U (4 cores, 8 threads) with 16GB of memory. The power-mode was set Performance, and the laptop connected to AC.
 
@@ -152,23 +156,21 @@ Python 3.13 was used for all computations, together with NumPy and SciPy for lin
 
 
 \section{Results}\label{sec:results}
-\input{figures/timing_all.tex}
-\input{tables/times_all.tex}  % TABLE II
-\input{tables/times_tall_wide.tex}  % TABLE III
 \input{figures/wide_vs_tall.tex} 
 
 
 \subsection{Computational performance}
-When assessing the effect of the matrix size on the computational time, I compute the median value across all test matrices of a given size and across all three spectral decay sets, since the condition number of the matrix does not affect the computation cost of the SVD and the rSVD (reference). For each matrix size, I report the median value over 90 (small), 45 (medium), and 15 (large) trials. The results are presented in Fig.~\ref{timeAll}, and relative runtimes for selected target ranks are listed in Tables~\ref{tab:times_all} and \ref{tab:times_tall_wide}.
+When assessing the effect of the matrix size on the computational time, I compute the median value across all test matrices of a given size and across all three spectral decay sets, since the condition number of the matrix does not affect the computation cost of the SVD and the rSVD (reference). For each matrix size, I report the median value over 90 (small), 45 (medium), and 15 (large) trials. The results are presented in Fig.~\ref{run_times_absolute}, and relative runtimes for selected target ranks are listed in Tables~\ref{tab:times_all} and \ref{tab:times_tall_wide}.
 
 
+\input{tables/times_all.tex}  % TABLE II
 \subsubsection{Effect of matrix size}
-Fig.~\ref{timeAll} shows the absolute run times (top row) and the relative speedup of rSVD over SVD as a function of target rank $k$ (bottom row). For small matrices ($n_s=100$), rSVD is significantly faster than SVD for small ranks ($k<10$). As $k$ increases, the computational time of rSVD increases rapidly, and SVD is faster when $k$ is greater than 10. For medium ($n_m=500$) and large ($n_l=1000$) matrices, rSVD consistently performs faster than SVD across all ranks used in this study (5 to 50). Speedups between 7 and 32 is seen for large matrices and between 1.5 and 20 for medium matrices. The relative advantage of rSVD over SVD generally increases with the matrix size.
+Fig.~\ref{run_times_absolute} shows the median run times of rSVD as a function of target rank $k$ compared with the median SVD run time. For small matrices ($n_s=100$), rSVD is significantly faster than SVD for small ranks ($k<10$). As $k$ increases, the computational time of rSVD increases rapidly, and SVD is faster when $k$ is greater than 10. For medium ($n_m=500$) and large ($n_l=1000$) matrices, rSVD consistently performs faster than SVD across all ranks used in this study (5 to 50). Speedups between 7 and 32 is seen for large matrices and between 1.5 and 20 for medium matrices. The relative advantage of rSVD over SVD generally increases with the matrix size.
 
 
 \subsubsection{Effect of matrix shape}
 To assess the influence of matrix shape, I compare the median computational time of rSVD on wide matrices ($t_{wide}$) versus tall matrices ($t_{tall}$) by looking at the ratio $t_{wide} / t_{tall}$, see Fig~\ref{wideVsTall} and Table~\ref{tab:times_tall_wide}. For small target ranks, rSVD has a fast runtime on wide matrices across all matrix sizes. The crossover, where rSVD becomes faster on tall matrices, decreases with increasing matrix size, occurring at ranks 22, 14, and 8, for small, medium, and large matrices, respectively. For small matrices, once this crossover rank is exceeded, the relative advantage of tall matrices grows as $k$ approaches 50. For medium sized matrices, the relative speedup on tall matrices remains approximately constant once the rank surpasses the crossover point. For large matrices, the advantage of tall matrices diminishes as $k$ increases passed the crossover point.
-
+\input{tables/times_tall_wide.tex}  % TABLE III
 
 \subsection{Approximation Error}
 \input{figures/errors_all.tex}
@@ -191,7 +193,7 @@ To assess the effect of matrix size, approximation errors of different matrix si
 \input{figures/expected_error.tex}
 
 
-\subsection{Interpretation of Computational Performance}
+\subsection{Interpretation of computational performance}
 % Why large matrices and small k help rSVD
 The results show that rSVD achieves its greatest speedup compared to the SVD on matrices of large size, and this speedup is greatest for small target ranks $k$. This can be explained by the computational complexity of the rSVD, $\mathcal O(kn^2)$, compared to SVDs complexity of $\mathcal O(n^2)$, assuming a matrix of shape $n\times 5n$. As $k$ approaches $n$, the complexity will be approximately $\mathcal O(n^3)$, and the additional computations in the rSVD are no longer beneficial, as was seen for small matrices with target ranks close to 50.
 
@@ -201,17 +203,52 @@ The first stage constructs an approximate orthonormal basis $Q$ and involves per
 Although the overall cost of Algorithm~\ref{alg:rsvd} scales as $\mathcal O(kmn)$, the contribution of the quadratic terms $\mathcal O(k^2m)$ and $\mathcal O(k^2n)$ decides whether tall or wide matrices are more efficient. Specifically, for wide matrices where $m \ll n$, the SVD of $B$ dominates and $\mathcal O(k^2n) > \mathcal O (k^2m)$. Conversely, for tall matrices where $m \gg n$, the QR decomposition dominates. The observed crossover rank, at which tall matrices become faster, is a balance between these two terms, and depends on both the matrix dimensions and the target rank $k$.
 
 
-\subsection{Interpretation of Approximation Error}
+\subsection{Interpretation of approximation error}
+As seen in Fig.~\ref{errorsAll}, the approximation error for rSVD and SVD depends on spectral decay and target rank. We saw that a rapid decay results in more accurate low-rank approximations and lower errors, while slowly decaying spectra require a higher target rank the achieve the same error. For the SVD, this is a direct result of the Eckart–Young–Mirsky theorem. For the rSVD, the error bound \eqref{eq:rsvd_error}, tells us the same: a slowly decaying spectral decay results in a higher expected upper bound on the error.
+
+Fig.~\ref{expectedError} illustrates the severe overestimate of \eqref{eq:rsvd_error}, especially for slow and moderate spectral decay profiles. The bound is on the order of $10^3$ to $10^1$, while the observed error is on the order of $10^1$ to $10^0$. The bounds for rapid decay singular values are tighter, but still overestimates by an order of magnitude. 
+
+For a greater insight into the estimate in \eqref{eq:rsvd_error}, we must investigate $Y = A\Omega$ in Algorithm~\ref{alg:rsvd}. Let $A=U\Sigma V^T$ be the SVD of $A$, and let $\Sigma_1$ consist of the $k+1$ first singular values of $A$, and $\Sigma_2$ the remaining singular values, with $V_1$ and $V_2$ consisting of corresponding right singular vectors, respectively. Then we can write $A$ as
+\begin{equation}
+    A =
+    U
+    \begin{bmatrix}
+    \Sigma_1 & \\
+    & \Sigma_2
+    \end{bmatrix}
+    \begin{bmatrix}
+    V_1^T \\ V_2^T
+    \end{bmatrix}.
+\end{equation}
+$Y$, which represents a random sample of the column space of $A$, takes the form
+\begin{equation}
+    Y = 
+    U
+    \begin{bmatrix}
+    \Sigma_1\Omega_1 \\
+    \Sigma_2\Omega_2
+    \end{bmatrix},
+\end{equation}
+where $\Omega_1 = V_1^T\Omega$ and $\Omega_2 = V_2^T\Omega_2$. Intuitively, $\Sigma_1\Omega_1$ represents the approximate actions of $A$, while $\Sigma_2\Omega_2$ represents perturbation. Indeed, with a slow decay of singular values, the perturbation $\Sigma_2\Omega_2$ will be more significant, resulting a larger upper bound on the expected error.
+
+
+\subsection{Interpretation of relative approximation error}
+The relative error between rSVD and the SVD approximation (Fig.~\ref{errorsAll}, bottom row) saw the the largest value for small matrices and the smallest values for larges. If we divide \eqref{eq:rsvd_error} by $\sigma_{k+1}$, we get an estimation on the upper bound of the expected error ratio, see Fig.~\ref{gammas}. Surprisingly, we see that this estimate suggests that larger matrices yields greater relative error, which is opposite of the observed results. It is possible that duo to a larger random matrix $\Omega$ in Algorithm~\ref{alg:rsvd} gives greater uncertainty in the estimate, yielding a worse bound. I note that further analysis must is required to understand this behavior.
+
+Another surprising observation is the effect of spectral decay on the relative error. In the results, we saw that a more rapid decay of singular values gave a greater relative error. However, Fig.~\ref{expectedError} shows that opposite trend, where a more rapid decay yields a smaller relative error.
+\input{figures/expected_ratio.tex}
+
+
 % connect slow/rapid decay behavior to theory
 % explain why relative error varies differently
 % discuss influence of k and decay rate
 
-\subsection{Practical Implications}
+\subsection{Practical implications}
 Scikit-learn provides an implementation of rSVD located within \texttt{sklearn/utils/extmath} \cite{pedregosa2011scikit}, which transposes $A\in\mathbb R^{m\times n}$ under the criteria that $m < n$.
 % when to use rSVD, when not
 % guidance on selecting k or understanding decay
 
-\subsection{Limitations and Future Directions}
+\subsection{Limitations and future directions}
 % synthetic data, p=5, no power iterations, etc.
 
 
