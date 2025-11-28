@@ -18,6 +18,7 @@ wheels/
 *.log
 *.pdf
 *.gz
+*.out
 
 .vscode
 *.npy
