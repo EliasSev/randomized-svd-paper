@@ -118,6 +118,12 @@ Let $A\in\mathbb R^{m\times n}$, and pick a target rank $k\ge 2$ and an oversamp
 \end{equation}
 where $\sigma_j$ is the $j$th singular value of $A$, $e$ is Euler's constant, and $\mathbb E$ denotes the expected value. For a proof, see Theorem 10.5 in \cite{halko_finding_2011}.
 
+Noting that $\sigma_j \le \sigma_{k+1}$ for all $j > k + 1$, \eqref{eq:rsvd_error} implies that
+\begin{equation}\label{eq:rsvd_error_simple}
+    \mathbb E\|A - X\|_2 \le \gamma_k \sigma_{k+1}
+\end{equation}
+where $\gamma_k$ is a constant given by $\gamma_k = (1 + \tfrac{4\sqrt{k+p}}{p-1}\min\{m,n\})$ and $\sigma_{k+1}$ is the ($k+1$)th singular value of $A$.
+
 
 \subsection{Computational cost}
 Assume that $A\in\mathbb R^{m\times n}$. Standard implementations of the SVD in linear algebra libraries like LAPACK or ScaLAPACK are based on two stage algorithms. In the first stage, $A$ is reduced to a bi-diagonal form through Householder transformations or Gives rotations. In the second stage, the SVD of the bidiagonal matrix if computed, typically using a QR-based or a divide-and-conquer approach. The LAPACK routine GESDD, used in this study, implements the divide-and-conquer method, which typically achieves higher performance compared to the QR-based approach \cite{dongarra_singular_2018}. The cost of this process is of the order $\mathcal O(mn\min\{m,n\})$, which simplifies to $\mathcal O(m^2n)$ for wide matrices where $m < n$, or to $\mathcal O(mn^2)$ for tall matrices where $m > n$.
@@ -221,7 +227,7 @@ For a greater insight into the estimate in \eqref{eq:rsvd_error}, we must invest
     \end{bmatrix}.
 \end{equation}
 $Y$, which represents a random sample of the column space of $A$, takes the form
-\begin{equation}
+\begin{equation}\label{eq:rsvd_perturbation}
     Y = 
     U
     \begin{bmatrix}
@@ -233,15 +239,10 @@ where $\Omega_1 = V_1^T\Omega$ and $\Omega_2 = V_2^T\Omega_2$. Intuitively, $\Si
 
 
 \subsection{Interpretation of relative approximation error}
-The relative error between rSVD and the SVD approximation (Fig.~\ref{errorsAll}, bottom row) saw the the largest value for small matrices and the smallest values for larges. If we divide \eqref{eq:rsvd_error} by $\sigma_{k+1}$, we get an estimation on the upper bound of the expected error ratio, see Fig.~\ref{gammas}. Surprisingly, we see that this estimate suggests that larger matrices yields greater relative error, which is opposite of the observed results. It is possible that duo to a larger random matrix $\Omega$ in Algorithm~\ref{alg:rsvd} gives greater uncertainty in the estimate, yielding a worse bound. I note that further analysis must is required to understand this behavior.
+The relative error between rSVD and the SVD approximation (Fig.~\ref{errorsAll}, bottom row) saw the the largest value for small matrices and the smallest values for larges. As we saw from \eqref{eq:rsvd_perturbation}, a larger $\Omega$ will give a greater perturbation $\Sigma_2\Omega_2$, increasing the upper bound. However, dividing the upper bound the the SVD error $\sigma_{k+1}$ does give a meaningful estimate on this relative error: the the upper bound will increase while $\sigma_{k+1}$ stays fixed. 
 
-Another surprising observation is the effect of spectral decay on the relative error. In the results, we saw that a more rapid decay of singular values gave a greater relative error. However, Fig.~\ref{expectedError} shows that opposite trend, where a more rapid decay yields a smaller relative error.
-\input{figures/expected_ratio.tex}
+In the case of relative error in relation to the spectral decay profile, we saw that a rapid decay gave a higher relative error. However, even if the relative error is greater, the absolute error is the smallest for such spectra, which illustrates how rSVD and SVD both a most effective when the dominant amount of actions of $A$ are captured in the first few singular vectors.
 
-
-% connect slow/rapid decay behavior to theory
-% explain why relative error varies differently
-% discuss influence of k and decay rate
 
 \subsection{Practical implications}
 Scikit-learn provides an implementation of rSVD located within \texttt{sklearn/utils/extmath} \cite{pedregosa2011scikit}, which transposes $A\in\mathbb R^{m\times n}$ under the criteria that $m < n$.
