@@ -210,11 +210,15 @@ Although the overall cost of Algorithm~\ref{alg:rsvd} scales as $\mathcal O(kmn)
 
 
 \subsection{Interpretation of approximation error}
-As seen in Fig.~\ref{errorsAll}, the approximation error for rSVD and SVD depends on spectral decay and target rank. We saw that a rapid decay results in more accurate low-rank approximations and lower errors, while slowly decaying spectra require a higher target rank the achieve the same error. For the SVD, this is a direct result of the Eckart–Young–Mirsky theorem. For the rSVD, the error bound \eqref{eq:rsvd_error}, tells us the same: a slowly decaying spectral decay results in a higher expected upper bound on the error.
+As shown in Fig.~\ref{errorsAll}, the approximation error of both rSVD and SVD depends on spectral decay and target rank $k$. Rapidly decaying spectra gives low-rank approximation with smaller error, whereas slowly decaying spectra require much larger $k$ to achieve comparable accuracy. For the truncated SVD, this is a direct result of the Eckart–Young–Mirsky theorem. For the rSVD, the error bound \eqref{eq:rsvd_error_simple} tells us the same: when the singular values decay slowly, the $\sigma_{k+1}$ term remains large, resulting in a larger theoretical upper bound on the expected approximation error.
 
-Fig.~\ref{expectedError} illustrates the severe overestimate of \eqref{eq:rsvd_error}, especially for slow and moderate spectral decay profiles. The bound is on the order of $10^3$ to $10^1$, while the observed error is on the order of $10^1$ to $10^0$. The bounds for rapid decay singular values are tighter, but still overestimates by an order of magnitude. 
+Fig.~\ref{expectedError} further shows that the bound in \eqref{eq:rsvd_error} is highly conservative, especially under slow and moderate spectral decay. The predicted error bound is between one and three orders of magnitude larger than the observed error. For rapidly decaying spectra, the bounds are somewhat tighter, but still overestimates the true error by roughly one order of magnitude. 
 
-For a greater insight into the estimate in \eqref{eq:rsvd_error}, we must investigate $Y = A\Omega$ in Algorithm~\ref{alg:rsvd}. Let $A=U\Sigma V^T$ be the SVD of $A$, and let $\Sigma_1$ consist of the $k+1$ first singular values of $A$, and $\Sigma_2$ the remaining singular values, with $V_1$ and $V_2$ consisting of corresponding right singular vectors, respectively. Then we can write $A$ as
+To understand why the bounds behaves this way, it is helpful to investigate the structure of
+\begin{equation}
+    Y = A\Omega,
+\end{equation}
+which forms the sample matrix in Algorithm~\ref{alg:rsvd}. Let $A=U\Sigma V^T$ be the SVD of $A$, and partition $\Sigma$ as $\Sigma = \operatorname{diag}(\Sigma_1, \Sigma_2)$, where $\Sigma_1$ contains the $k+1$ first singular singular values and $\Sigma_2$ contains the remainder. Correspondingly, partition the right singular vectors as $V = \begin{bmatrix}V_1 & V_2\end{bmatrix}$. Then $A$ can be expressed as
 \begin{equation}
     A =
     U
@@ -226,7 +230,7 @@ For a greater insight into the estimate in \eqref{eq:rsvd_error}, we must invest
     V_1^T \\ V_2^T
     \end{bmatrix}.
 \end{equation}
-$Y$, which represents a random sample of the column space of $A$, takes the form
+Multiplying by the random test matrix $\Omega$ gives
 \begin{equation}\label{eq:rsvd_perturbation}
     Y = 
     U
@@ -235,13 +239,13 @@ $Y$, which represents a random sample of the column space of $A$, takes the form
     \Sigma_2\Omega_2
     \end{bmatrix},
 \end{equation}
-where $\Omega_1 = V_1^T\Omega$ and $\Omega_2 = V_2^T\Omega_2$. Intuitively, $\Sigma_1\Omega_1$ represents the approximate actions of $A$, while $\Sigma_2\Omega_2$ represents perturbation. Indeed, with a slow decay of singular values, the perturbation $\Sigma_2\Omega_2$ will be more significant, resulting a larger upper bound on the expected error.
+where $\Omega_1 = V_1^T\Omega$ and $\Omega_2 = V_2^T\Omega$. Intuitively, $\Sigma_1\Omega_1$ contains the dominant actions of $A$, while $\Sigma_2\Omega_2$ represents perturbation. When the singular values decay slowly, the perturbation $\Sigma_2\Omega_2$ remains relatively large, resulting in a larger upper bound on the expected error. For a more comprehensive discussion of rSVD error bounds, see Chapter 9 of \cite{halko_finding_2011}.
 
 
 \subsection{Interpretation of relative approximation error}
-The relative error between rSVD and the SVD approximation (Fig.~\ref{errorsAll}, bottom row) saw the the largest value for small matrices and the smallest values for larges. As we saw from \eqref{eq:rsvd_perturbation}, a larger $\Omega$ will give a greater perturbation $\Sigma_2\Omega_2$, increasing the upper bound. However, dividing the upper bound the the SVD error $\sigma_{k+1}$ does give a meaningful estimate on this relative error: the the upper bound will increase while $\sigma_{k+1}$ stays fixed. 
+The relative error between rSVD and the SVD approximation (Fig.~\ref{errorsAll}, bottom row) saw the the largest value for small matrices and the smallest for large ones. This trend is consistent with the expression in \eqref{eq:rsvd_perturbation}: the perturbation term $\Sigma_{2}\Omega_{2}$ grows with the dimension of $\Omega$, which increases the numerator of the relative error. The denominator, however, is the SVD error $\sigma_{k+1}$, which does not depend on the matrix size. Consequently, as the problem dimension increases, the perturbation grows while the reference error remains fixed, resulting in an increase in the relative error bound, even tho the relative error decreases in practice.
 
-In the case of relative error in relation to the spectral decay profile, we saw that a rapid decay gave a higher relative error. However, even if the relative error is greater, the absolute error is the smallest for such spectra, which illustrates how rSVD and SVD both a most effective when the dominant amount of actions of $A$ are captured in the first few singular vectors.
+Regarding the influence of spectral decay, the experiments showed that a rapid decay gave the highest relative error. This behavior should be interpreted alongside the absolute:although the relative error is greater for rapid decay, the absolute error is the smallest for such spectra. This illustrates how rSVD and truncated SVD both perform best when the dominant amount of actions of $A$ are concentrated in its first few singular vectors, even if small differences appear magnified when expressed relative to the SVD.
 
 
 \subsection{Practical implications}
