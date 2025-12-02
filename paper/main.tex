@@ -126,7 +126,7 @@ where $\gamma_k$ is a constant given by $\gamma_k = (1 + \tfrac{4\sqrt{k+p}}{p-
 
 
 \subsection{Computational cost}
-Assume that $A\in\mathbb R^{m\times n}$. Standard implementations of the SVD in linear algebra libraries like LAPACK or ScaLAPACK are based on two-stage algorithms (TODO: referanse). In the first stage, $A$ is reduced to a bi-diagonal form through Householder transformations or Gives rotations. In the second stage, the SVD of the bidiagonal matrix is computed, typically using a QR-based or a divide-and-conquer approach (TODO: beskriv dette i appendiks). The LAPACK routine GESDD, used in this study, implements the divide-and-conquer method, which typically achieves higher performance compared to the QR-based approach \cite{dongarra_singular_2018}. The cost of this process is of the order $\mathcal O(mn\min\{m,n\})$, which simplifies to $\mathcal O(m^2n)$ for wide matrices where $m < n$, or to $\mathcal O(mn^2)$ for tall matrices where $m > n$.
+Assume that $A\in\mathbb R^{m\times n}$. Standard implementations of the SVD in linear algebra libraries like LAPACK or ScaLAPACK are based on two-stage algorithms \cite{blanchard_2019_nlafet}. In the first stage, $A$ is reduced to a bi-diagonal form through Householder transformations or Gives rotations. In the second stage, the SVD of the bidiagonal matrix is computed, typically using a QR-based or a divide-and-conquer approach (TODO: beskriv dette i appendiks). The LAPACK routine GESDD, used in this study, where `GE' denotes a general dense matrix and `SDD' identifies the SVD driver, implements the divide-and-conquer method \cite{LAPACK99}. This method typically achieves higher performance compared to the QR-based approach \cite{dongarra_singular_2018}. The cost of this process is of the order $\mathcal O(mn\min\{m,n\})$, which simplifies to $\mathcal O(m^2n)$ for wide matrices where $m < n$, or to $\mathcal O(mn^2)$ for tall matrices where $m > n$.
 
 The rSVD algorithm consists of two stages. In the first stage, an approximate orthogonal basis $Q$ of $A$ is constructed, and in the second stage, the SVD is approximated using the projection of $A$ onto $Q$. The first stage of Algorithm \ref{alg:rsvd}, which constructs the orthogonal basis $Q$, has a cost of $\mathcal O(k^2m)$ as a result of the QR factorization. Stage two, the projection and construction of an approximate SVD, has a cost of $\mathcal O(mnk)$. The overall cost is therefore on the order of $\mathcal O(mnk)$. More efficient but less accurate algorithms for stage 2 are proposed, for instance Algorithm 5.2 in \cite{halko_finding_2011}, which relies on the interpolative decomposition (ID), and has a cost of $\mathcal O(mn\log k)$.
 
@@ -299,19 +299,19 @@ The QR factorization of $A\in\mathbb R^{m\times b}$ is a decomposition
 \begin{equation}
     A = QR,
 \end{equation}
-where $Q\in\mathbb R^{m\times n}$ has orthonormal columns and $R\in\mathbb R^{n\times n}$ is upper diagonal. The matrix $Q$ forms an orthonormal basis for $\text{range}(A)$.
+where $Q\in\mathbb R^{m\times n}$ has orthonormal columns and $R\in\mathbb R^{n\times n}$ is upper diagonal. The matrix $Q$ forms an orthonormal basis for $\text{range}(A)$, as described in \cite{golub_matrix_1996} Section 5.2.
 
 
 \subsection{Givens rotation}
-Givens rotation is a rotation in the plane by an angle $\theta$. The rotation is represented by a $2\times 2$ matrix $G$, given by
+Givens rotation is a rotation in the plane by an angle $\theta$. The rotation is represented by a matrix of the form
 \begin{equation}
     G = 
     \begin{bmatrix}
-        c & -s \\
-        s & c
+    c & -s \\
+    s & c
     \end{bmatrix},
 \end{equation}
-where $c = \cos\theta$ and $s = \sin\theta$. The method is named after Wallace Givens who introduced it in the 1950s. For instance, the method is mentioned in the abstract of \cite{householder_unitary_1958}.
+where $c = \cos\theta$ and $s = \sin\theta$. The method is named after Wallace Givens who introduced it in the 1950s. The matrix can be extended to act rows $i$ and $j$ of a matrix $A$, and used repeatedly to convert a matrix into a lower triangular form in order to compute a QR factorization, see Section 5.2 in \cite{golub_matrix_1996}.
 
 
 \subsection{Householder transformation}
@@ -319,7 +319,7 @@ Let $v$ be a normal vector defining a hyperplane $\mathcal H$. The Householder t
 \begin{equation}
     P = I - 2uu^T,\quad u = \frac{v}{\|v\|}.
 \end{equation}
-The transformation was described by Alston S. Householder in a 1958 paper \cite{householder_unitary_1958}.
+The transformation was described by Alston S. Householder in a 1958 paper \cite{householder_unitary_1958}. Householder transformations can be used to reduce matrices to bi-diagonal form, or to lower-triangular form as part of a QR factorization, as described in Sections 5.4 and 5.3 in \cite{golub_matrix_1996}, respectively.
 
 
 \subsection{Interpolative decomposition}
@@ -327,6 +327,6 @@ Let $A\in\mathbb R^{m\times n}$ be of rank $k$. The ID of $A$ is a factorizatio
 \begin{equation}
     A = A_{(:,J)}X,
 \end{equation}
-where $J\subset \{1,\dots,n\}$ is an index set of $k$ indices, $A_{(:,J)}$ a matrix made up of the $J$'s columns of $A$, and $X$ a matrix where $X_{(:,J)}=I_k$. See Section (3.2.3) in \cite{halko_finding_2011}.
+where $J\subset \{1,\dots,n\}$ is an index set of $k$ indices, $A_{(:,J)}$ a matrix made up of the $J$'s columns of $A$, and $X$ a matrix where $X_{(:,J)}=I_k$. See Section 3.2.3 in \cite{halko_finding_2011}.
 
 \end{document}
