@@ -55,8 +55,7 @@ The rSVD computes a low-rank approximation of a matrix $A$ by sampling its colum
 % The goal of this paper
 In this work, we investigate the trade-offs between the classical SVD and its randomized version. The goal is to compare the computational efficiency and accuracy of the rSVD relative to the SVD on a range of matrix shapes, sizes and spectral decay profiles (the distribution of singular values). We use synthetic test matrices, with a prescribed spectral decay, to investigate the effect on the error of the rSVD against the SVD. In addition, we compare the performance of the rSVD on both tall and wide matrices, evaluating how its efficiency varies with matrix dimensions and target approximation rank.
 
-% Main results
-Our experiments show that\dots
+% Main results TODO: Our experiments show that\dots
 
 
 \section{Theory}\label{sec:theory}
@@ -164,7 +163,7 @@ Python 3.13 was used for all computations, together with NumPy and SciPy for lin
 
 
 \subsection{Computational performance}
-When assessing the effect of the matrix size on the computational time, I compute the median value across all test matrices of a given size and across all three spectral decay sets, since the condition number of the matrix does not affect the computation cost of the SVD and the rSVD (reference). For each matrix size, I report the median value over 90 (small), 45 (medium), and 15 (large) trials. The results are presented in Fig.~\ref{run_times_absolute}, and relative runtimes for selected target ranks are listed in Tables~\ref{tab:times_all} and \ref{tab:times_tall_wide}.
+When assessing the effect of the matrix size on the computational time, we computed the median value across all test matrices of a given size and across all three spectral decay sets, since the condition number of the matrix does not affect the computation cost of the SVD and the rSVD (TODO: referanse). For each matrix size, we reported the median value over 90 (small), 45 (medium), and 15 (large) trials. The results are presented in Fig.~\ref{run_times_absolute}, and relative runtimes for selected target ranks are listed in Tables~\ref{tab:times_all} and \ref{tab:times_tall_wide}.
 
 
 \input{tables/times_all.tex}  % TABLE I
@@ -173,7 +172,7 @@ Fig.~\ref{run_times_absolute} shows the median run times of rSVD as a function o
 
 
 \subsubsection{Effect of matrix shape}
-To assess the influence of matrix shape, I compare the median computational time of rSVD on wide matrices ($t_{wide}$) versus tall matrices ($t_{tall}$) by looking at the ratio $t_{wide} / t_{tall}$, see Fig~\ref{wideVsTall} and Table~\ref{tab:times_tall_wide}. For small target ranks, rSVD has a fast runtime on wide matrices across all matrix sizes. The crossover, where rSVD becomes faster on tall matrices, decreases with increasing matrix size, occurring at ranks 22, 14, and 8, for small, medium, and large matrices, respectively. For small matrices, once this crossover rank is exceeded, the relative advantage of tall matrices grows as $k$ approaches 50. For medium sized matrices, the relative speedup on tall matrices remains approximately constant once the rank surpasses the crossover point. For large matrices, the advantage of tall matrices diminishes as $k$ increases passed the crossover point.
+To assess the influence of matrix shape, we compared the median computational time of rSVD on wide matrices ($t_{wide}$) versus tall matrices ($t_{tall}$) by looking at the ratio $t_{wide} / t_{tall}$, see Fig~\ref{wideVsTall} and Table~\ref{tab:times_tall_wide}. For small target ranks, rSVD has a fast runtime on wide matrices across all matrix sizes. The crossover, where rSVD becomes faster on tall matrices, decreases with increasing matrix size, occurring at ranks 22, 14, and 8, for small, medium, and large matrices, respectively. For small matrices, once this crossover rank is exceeded, the relative advantage of tall matrices grows as $k$ approaches 50. For medium sized matrices, the relative speedup on tall matrices remains approximately constant once the rank surpasses the crossover point. For large matrices, the advantage of tall matrices diminishes as $k$ increases passed the crossover point.
 \input{tables/times_tall_wide.tex}  % TABLE II
 
 \subsection{Approximation Error}
@@ -261,17 +260,14 @@ Further, Algorithm~\ref{alg:rsvd} may be extended to include power iterations (s
 
 
 \section{Conclusion}\label{sec:conclusion}
-% Paragraph 1: What, why and setup
-% Paragraph 2: Computational performance, errors (absolute, relative), key crossover or threshold behaviors
-% Paragraph 3: Practical takeaways (when rSVD, when SVD, etc.)
-% Paragraph 4: Future work
-This study investigated\dots
+% What, why and setup. Results
+This work investigated the computational efficiency and approximation accuracy of rSVD relative to the classical SVD across matrices of varying size, shape, and spectral decay. Our results showed that the computational time for rSVD is substantially lower for large matrices, especially for small target ranks. The accuracy of rSVD is largely determined by the spectral decay, where a rapid decay yields better approximations. We also observed that the crossover rank, where rSVD has a lower runtime on wide data compared to tall data, depends on both matrix size and target rank. Generally, for small target ranks, matrices of wide format are preferred, where this crossover rank was seen to decrease with the size of the matrices. 
 
-The results showed that\dots
+% Practical takeaways
+Our findings suggest improved heuristics in the rSVD implementation of libraries such as Skikit-learn, which should not only depend on matrix shape, but also the target rank and matrix size. For a user perspective, we saw the rSVD is most effective for small target ranks on large matrices, especially with rapid spectral decays.
 
-From a practical perspective\dots
-
-Future work may consider\dots
+% Future work
+Limitations of our experiments include the use of synthetic dense matrices, a fixed oversampling parameter, and no power iterations. Future work could explore real-world data, sparse matrices, and alternative algorithms for the rSVD. Overall, rSVD is an effective and computationally efficient alternative to classical SVD in many practical scenarios, especially for low-rank approximations of matrices of large size.
 
 \bibliographystyle{plain}  % or 'unsrt', 'alpha', 'ieeetr', etc.
 \bibliography{references}
