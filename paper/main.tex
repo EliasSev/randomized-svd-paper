@@ -82,6 +82,14 @@ The singular value decomposition of a matrix $A\in\mathbb R^{m\times n}$ is a fa
 where $U$ is an $m \times m$ orthogonal matrix, $\Sigma$ is an $m\times n$ diagonal matrix with non-negative values, called the singular values of $A$, along its diagonal, and $V$ is an $n \times n$ orthogonal matrix. The singular values are ordered such that $\sigma_1\ge\sigma_2\ge\dots\ge\sigma_n$. Every matrix has such a factorization, where $\Sigma$ is uniquely determined, but $U$ and $V$ are not \cite{lay_linear_2022}. The columns of $U$ and $V$ are called the left and right singular vectors of $A$, respectively.
 
 
+\subsection{QR factorization}
+The QR factorization of $A\in\mathbb R^{m\times n}$ is a decomposition
+\begin{equation}
+    A = QR,
+\end{equation}
+where $Q\in\mathbb R^{m\times n}$ has orthonormal columns and $R\in\mathbb R^{n\times n}$ is upper diagonal. The matrix $Q$ forms an orthonormal basis for $\text{range}(A)$, as described in \cite[Sec. 6]{golub_matrix_1996}. The computation of a QR factorization is done through a series of orthogonal transformations, like Givens rotations or Householder transformations (see Appendix~\ref{A:givens_rotation}, \ref{A:householder_transformation}).
+
+
 \subsection{The randomized SVD}
 The rSVD is a technique used to approximate the rank-$k$ approximation of an $m\times n$ matrix without computing the SVD. The core idea is to use random sampling to find a low-rank matrix $Q$ which approximates the range of $A$, project $A$ onto $Q$, and compute the SVD of the projection. The projection $Y=Q^TA$ will with a high probability capture the dominant directions of $A$, and the SVD of $Y$ will yield a good approximation \cite{halko_finding_2011}. This procedure is summarized in Algorithm \ref{alg:rsvd}. Note that the approximation $A\approx QQ^T A$ and the approximate factorization $A\approx U\Sigma V^T$ produced by rSVD have the same error. This can be seen by observing that $QQ^TA = QB = Q\tilde U\Sigma V^T$, and setting $U=Q\tilde U$.
 \begin{algorithm}[!h]
@@ -125,7 +133,7 @@ where $\gamma_k$ is a constant given by $\gamma_k = (1 + \tfrac{4\sqrt{k+p}}{p-
 
 
 \subsection{Computational cost}
-Assume that $A\in\mathbb R^{m\times n}$. Standard implementations of the SVD in linear algebra libraries like LAPACK or ScaLAPACK are based on two-stage algorithms \cite{blanchard_2019_nlafet}. In the first stage, $A$ is reduced to a bi-diagonal form through Householder transformations or Gives rotations. In the second stage, the SVD of the bidiagonal matrix is computed, typically using a QR-based or a divide-and-conquer approach (TODO: beskriv dette i appendiks). The LAPACK routine GESDD, used in this study, where `GE' denotes a general dense matrix and `SDD' identifies the SVD driver, implements the divide-and-conquer method \cite{LAPACK99}. This method typically achieves higher performance compared to the QR-based approach \cite{dongarra_singular_2018}. The cost of this process is of the order $\mathcal O(mn\min\{m,n\})$, which simplifies to $\mathcal O(m^2n)$ for wide matrices where $m < n$, or to $\mathcal O(mn^2)$ for tall matrices where $m > n$.
+Assume that $A\in\mathbb R^{m\times n}$. Standard implementations of the SVD in linear algebra libraries like LAPACK or ScaLAPACK are based on two-stage algorithms \cite{blanchard_2019_nlafet}. In the first stage, $A$ is reduced to a bi-diagonal, most commonly through Householder transformations (see Appendix~\ref{A:householder_transformation}). In the second stage, the SVD of the bi-diagonal matrix is computed, typically using a QR-based or a divide-and-conquer approach, as described in Section 2 in \cite{blanchard_2019_nlafet}. The LAPACK routine GESDD, used in this study, where `GE' denotes a general dense matrix and `SDD' identifies the SVD driver, implements the divide-and-conquer method \cite{LAPACK99}. This method typically achieves higher performance compared to the QR-based approach \cite{dongarra_singular_2018}. The cost of this process is of the order $\mathcal O(mn\min\{m,n\})$, which simplifies to $\mathcal O(m^2n)$ for wide matrices where $m < n$, or to $\mathcal O(mn^2)$ for tall matrices where $m > n$.
 
 The rSVD algorithm consists of two stages. In the first stage, an approximate orthogonal basis $Q$ of $A$ is constructed, and in the second stage, the SVD is approximated using the projection of $A$ onto $Q$. The first stage of Algorithm \ref{alg:rsvd}, which constructs the orthogonal basis $Q$, has a cost of $\mathcal O(k^2m)$ as a result of the QR factorization. Stage two, the projection and construction of an approximate SVD, has a cost of $\mathcal O(mnk)$. The overall cost is therefore on the order of $\mathcal O(mnk)$. More efficient but less accurate algorithms for stage 2 are proposed, for instance Algorithm 5.2 in \cite{halko_finding_2011}, which relies on the interpolative decomposition (ID), and has a cost of $\mathcal O(mn\log k)$.
 
@@ -248,7 +256,7 @@ Regarding the influence of spectral decay, the experiments showed that a rapid d
 \subsection{Practical implications}
 The observed performance properties of rSVD have several direct implications for practical use in machine learning and scientific computing. The dependence of computational cost on both the matrix shape and the target rank suggests the choice between SVD and rSVD should not be based solely on matrix size, but rather on the interaction between $k$, $m$, and $n$. In particular, the fact that the matrix shape influences performance shows that transposition strategies used by some libraries can meaningfully affect runtime.
 
-These considerations are reflected partially in the heuristics implemented in Scikit-learn. For example, \texttt{TruncatedSVD}, (see Scikit-learn source code, \texttt{sklearn.decomposition}), relies on randomized SVD by default, consistent with the common scenario in which only a small number of components is required. Likewise, Scikit-learns \texttt{PCA} defaults to rSVD when the data are sufficiently large and the target dimension is significantly smaller than the matrix dimension. Both these methods rely on Scikit-learns \texttt{randomized\_svd} (see \texttt{sklearn/utils}). Notably, this implementation transposes the data when the number of columns exceeds the number of rows: our results indicate that this strategy is beneficial only above certain rank thresholds and can be suboptimal for small $k$.
+These considerations are reflected partially in the heuristics implemented in Scikit-learn. For example, \texttt{TruncatedSVD}, relies on randomized SVD by default, consistent with the common scenario in which only a small number of components is required \cite{sklearn_tsvd}. Likewise, Scikit-learns \texttt{PCA} defaults to rSVD when the data are sufficiently large and the target dimension is significantly smaller than the matrix dimension \cite{sklearn_pca}. Both these methods rely on Scikit-learns \texttt{randomized\_svd} \cite{sklearn_randomized_svd}. Notably, this implementation transposes the data when the number of columns exceeds the number of rows: our results indicate that this strategy is beneficial only above certain rank thresholds and can be suboptimal for small $k$.
 
 From a user perspective, our findings suggest several guidelines. Randomized SVD is most effective when (i) the matrix size is large, (ii) the target rank is small relative to the matrix dimensions, and (iii) the singular values decay quickly. Deterministic SVD may be preferable for small matrices or when high approximation accuracy is critical. 
 
@@ -264,10 +272,11 @@ Further, Algorithm~\ref{alg:rsvd} may be extended to include power iterations (s
 This work investigated the computational efficiency and approximation accuracy of rSVD relative to the classical SVD across matrices of varying size, shape, and spectral decay. Our results showed that the computational time for rSVD is substantially lower for large matrices, especially for small target ranks. The accuracy of rSVD is largely determined by the spectral decay, where a rapid decay yields better approximations. We also observed that the crossover rank, where rSVD has a lower runtime on wide data compared to tall data, depends on both matrix size and target rank. Generally, for small target ranks, matrices of wide format are preferred, where this crossover rank was seen to decrease with the size of the matrices. 
 
 % Practical takeaways
-Our findings suggest improved heuristics in the rSVD implementation of libraries such as Skikit-learn, which should not only depend on matrix shape, but also the target rank and matrix size. For a user perspective, we saw the rSVD is most effective for small target ranks on large matrices, especially with rapid spectral decays.
+Our findings suggest improved heuristics in the rSVD implementation of libraries such as Scikit-learn, which should not only depend on matrix shape, but also the target rank and matrix size. For a user perspective, we saw the rSVD is most effective for small target ranks on large matrices, especially with rapid spectral decays.
 
 % Future work
 Limitations of our experiments include the use of synthetic dense matrices, a fixed oversampling parameter, and no power iterations. Future work could explore real-world data, sparse matrices, and alternative algorithms for the rSVD. Overall, rSVD is an effective and computationally efficient alternative to classical SVD in many practical scenarios, especially for low-rank approximations of matrices of large size.
+
 
 \bibliographystyle{plain}  % or 'unsrt', 'alpha', 'ieeetr', etc.
 \bibliography{references}
@@ -288,14 +297,6 @@ for instance, see Lemma 2.7-2 in \cite{kreyszig_functional_1991}. Additionally, 
     \|A\|_2 = \sigma_1,
 \end{equation}
 where $\sigma_1$ is the largest singular value of $A$. See Theorem 6 Section 7.2 in \cite{lay_linear_2022} for a proof. Equation \eqref{l2_2} is used when computing $\|A\|_2$ in practice.
-
-
-\subsection{QR factorization}\label{A:QR_factorization}
-The QR factorization of $A\in\mathbb R^{m\times b}$ is a decomposition
-\begin{equation}
-    A = QR,
-\end{equation}
-where $Q\in\mathbb R^{m\times n}$ has orthonormal columns and $R\in\mathbb R^{n\times n}$ is upper diagonal. The matrix $Q$ forms an orthonormal basis for $\text{range}(A)$, as described in \cite{golub_matrix_1996} Section 5.2.
 
 
 \subsection{Givens rotation}\label{A:givens_rotation}
