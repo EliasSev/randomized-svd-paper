@@ -45,12 +45,12 @@ Low-rank matrix approximations are essential in modern applications like scienti
 
 \section{Introduction}
 % Motivation: big data
-The need for efficient and accurate numerical algorithms for data analysis is more relevant than ever. Modern scientific and industrial applications produce data sets of massive scale and complexity. In physics simulations, discretization of partial differential equations gives linear systems with billions of unknowns \cite{ohana_well_2025}. In medical image analysis, large-scale studies produces data sets with hundreds of thousands of images \cite{bustos_medical_2020}. Similarly, in natural language processing, document-term matrices can have tens of thousands of columns and hundreds of rows \cite{antonellis_exploring_2006}. Indeed, large-scale data sets naturally occur in a wide range of fields and applications.
+The need for efficient and accurate numerical algorithms for data analysis is more relevant than ever. Modern scientific and industrial applications produce data sets of massive scale and complexity. In physics simulations, discretization of partial differential equations can result in linear systems with billions of unknowns \cite{ohana_well_2025}. In medical image analysis, large-scale studies produce data sets with hundreds of thousands of images \cite{bustos_medical_2020}. Similarly, in natural language processing, document-term matrices can have tens of thousands of columns and hundreds of rows \cite{antonellis_exploring_2006}. Indeed, large-scale data sets naturally occur in a wide range of fields and applications.
 
 % Introducing the SVD, its challenges, and the rSVD
-The SVD is a fundamental tool in data analysis and numerical linear algebra. It has numerous applications, including dimensionality reduction and high-dimensional data visualization \cite{gewers_principal_2021}, data compression \cite{mathews_image_nodate}, and various regularization techniques \cite{hansen_discrete_2010}. Given a matrix $A\in\mathbb R^{m\times n}$, the SVD decomposes the matrix into its main directions of variation, the singular vectors, and a set of singular values describing the importance of the identified directions. However, the computational cost of the SVD is high: for an $n\times n$ matrix, the cost scales as $\mathcal O(n^3)$, which makes it infeasible for many large scale applications. This has motivated the development of randomized algorithms, notably the rSVD, which provides an efficient alterative at the cost of somewhat lower accuracy.
+The SVD is a fundamental tool in data analysis and numerical linear algebra. It has numerous applications, including dimensionality reduction and high-dimensional data visualization \cite{gewers_principal_2021}, data compression \cite{mathews_image_nodate}, and various regularization techniques \cite{hansen_discrete_2010}. Given a matrix $A\in\mathbb R^{m\times n}$, the SVD decomposes the matrix into its main directions of variation, the singular vectors, and a set of singular values describing the importance of the identified directions. However, the computational cost of the SVD is high: for an $n\times n$ matrix, the cost scales as $\mathcal O(n^3)$, which makes it infeasible for many large scale applications. This has motivated the development of randomized algorithms, notably randomized SVD, which provides an efficient alterative at the cost of somewhat lower accuracy.
 
-The rSVD computes a low-rank approximation of a matrix $A$ by sampling its column space with random test vectors to construct an approximate orthonormal basis $Q$. The matrix is projected onto this approximate subspace, producing a matrix $B$ of smaller size, which captures the main components of $A$. Performing the SVD on this reduced version of $A$ gives an efficient way to compute a rank-$k$ approximation.
+The rSVD algorithm computes a low-rank approximation of a matrix $A$ by sampling its column space with random test vectors to construct an approximate orthonormal basis $Q$. The matrix is projected onto this approximate subspace, producing a matrix $B$ of smaller size, which captures the main components of $A$. Performing the SVD on this reduced version of $A$ gives an efficient way to compute a rank-$k$ approximation.
 
 % The goal of this paper
 In this work, we investigate the trade-offs between the classical SVD and its randomized version. The goal is to compare the computational efficiency and accuracy of the rSVD relative to the SVD on a range of matrix shapes, sizes and spectral decay profiles (the distribution of singular values). We use synthetic test matrices, with a prescribed spectral decay, to investigate the effect on the error of the rSVD against the SVD. In addition, we compare the performance of the rSVD on both tall and wide matrices, evaluating how its efficiency varies with matrix dimensions and target approximation rank.
@@ -68,13 +68,13 @@ Consider the goal of finding a rank-$k$ approximation to an $m \times n$ matrix 
 \end{equation}
 where $\| \cdot \|_2$ is the $\ell_2$ operator norm, also known as the spectral norm. Equivalently, every rank-$k$ matrix can be viewed as the projection of $A$ onto a $k$-dimensional subspace of $\mathbb R^m$. 
 
-Let $Q\in\mathbb R^{m\times k}$ have orthonormal columns. Then $QQ^TA$ is the orthogonal projection of $A$ onto the $k$-dimensional subspace $\text{span}(Q)$. The problem can also be formulated as
+Let $Q\in\mathbb R^{m\times k}$ have orthonormal columns, i.e. $Q^TQ = I_k$. Then $QQ^TA$ is the orthogonal projection of $A$ onto the $k$-dimensional subspace $\text{span}(Q)$. The problem can also be formulated as
 \begin{equation}\label{probForm2}
     \min_{Q^TQ=I_k} \|A-QQ^TA \|_2 
 \end{equation}
 
 
-\subsection{The singular value decomposition}
+\subsection{Singular value decomposition}
 The singular value decomposition of a matrix $A\in\mathbb R^{m\times n}$ is a factorization of the form
 \begin{equation}
     A = U\Sigma V^T
@@ -90,7 +90,7 @@ The QR factorization of $A\in\mathbb R^{m\times n}$ is a decomposition
 where $Q\in\mathbb R^{m\times n}$ has orthonormal columns and $R\in\mathbb R^{n\times n}$ is upper diagonal. The matrix $Q$ forms an orthonormal basis for $\text{range}(A)$, as described in \cite[Sec. 6]{golub_matrix_1996}. The computation of a QR factorization is done through a series of orthogonal transformations, like Givens rotations or Householder transformations (see Appendix~\ref{A:givens_rotation}, \ref{A:householder_transformation}).
 
 
-\subsection{The randomized SVD}
+\subsection{Randomized SVD}
 The rSVD is a technique used to approximate the rank-$k$ approximation of an $m\times n$ matrix without computing the SVD. The core idea is to use random sampling to find a low-rank matrix $Q$ which approximates the range of $A$, project $A$ onto $Q$, and compute the SVD of the projection. The projection $Y=Q^TA$ will with a high probability capture the dominant directions of $A$, and the SVD of $Y$ will yield a good approximation \cite{halko_finding_2011}. This procedure is summarized in Algorithm \ref{alg:rsvd}. Note that the approximation $A\approx QQ^T A$ and the approximate factorization $A\approx U\Sigma V^T$ produced by rSVD have the same error. This can be seen by observing that $QQ^TA = QB = Q\tilde U\Sigma V^T$, and setting $U=Q\tilde U$.
 \begin{algorithm}[!h]
 \caption{rSVD}
@@ -150,15 +150,15 @@ Each orthogonal matrix was constructed by drawing a random $n\times n$ matrix $\
 
 To investigate how spectral decay affects accuracy, three sets of prescribed singular values were used. We used the polynomially decaying sequence of the form
 \begin{equation}\label{decay}
-\sigma_{k+1} = \frac{10}{(1 + \alpha k)^2},\quad k=0,\dots,n-1,
+    \sigma_{k+1} = \frac{10}{(1 + \alpha k)^2},\quad k=0,\dots,n-1,
 \end{equation}
 where the parameter $\alpha$ controls the rate of decay. The condition number is $\kappa = \sigma_1 / \sigma_{n} = (1 + \alpha n - \alpha)^2$, and solving for $\alpha$ gives
 \begin{equation}
-\alpha = \frac{\sqrt{\kappa(n-1)^2}-n+1}{(n-1)^2}.
+    \alpha = \frac{\sqrt{\kappa(n-1)^2}-n+1}{(n-1)^2}.
 \end{equation}
 In this study, we used the condition numbers $\kappa_1 = 2$, $\kappa_2 = 50$, and $\kappa_3 = 1000$, which corresponds to slow, moderate and a rapid spectral decay (see Fig.~\ref{spectralDecay}). The singular values from \eqref{decay} are placed on the diagonal of $\Sigma$, and the test matrix is the result of $A = U\Sigma V^T$.
 
-The size of the test matrices were set to $n\times 5n$, for the values $n_s=100$, $n_m=500$, and $n_l=1000$, which we refer to as the small, medium and large case, respectively. For each combination of spectral decay (slow, moderate, rapid) and matrix size (small, medium, large), We generated $R$ random samples depending on the size, where $R=30$ for the small case, $R=15$ for the medium case, and $R=5$ for the large case.
+The size of the test matrices were set to $n\times 5n$, for the values $n_s=100$, $n_m=500$, and $n_l=1000$, which we refer to as the small, medium and large case, respectively. For each combination of spectral decay (slow, moderate, rapid) and matrix size (small, medium, large), We generated $r$ random samples depending on the size, where $r=30$ for the small case, $r=15$ for the medium case, and $r=5$ for the large case.
 \input{figures/spectral_decay.tex}
 
 
