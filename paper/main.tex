@@ -64,20 +64,20 @@ In this work, we investigate the trade-offs between the classical SVD and its ra
 \subsection{Problem formulation}
 Consider the goal of finding a rank-$k$ approximation to an $m \times n$ matrix $A$. We are seeking a matrix $X$ with $\text{rank}(X) \le k$ which approximates $A$. The problem formulation is
 \begin{equation}\label{probForm1}
-    \min_{\text{rank}(X)\le k} \|A - X \|_2
+    \min_{\text{rank}(X)\le k} \|A - X \|_2,
 \end{equation}
 where $\| \cdot \|_2$ is the $\ell_2$ operator norm, also known as the spectral norm. Equivalently, every rank-$k$ matrix can be viewed as the projection of $A$ onto a $k$-dimensional subspace of $\mathbb R^m$. 
 
 Let $Q\in\mathbb R^{m\times k}$ have orthonormal columns, i.e. $Q^TQ = I_k$. Then $QQ^TA$ is the orthogonal projection of $A$ onto the $k$-dimensional subspace $\text{span}(Q)$. The problem can also be formulated as
 \begin{equation}\label{probForm2}
-    \min_{Q^TQ=I_k} \|A-QQ^TA \|_2 
+    \min_{Q^TQ=I_k} \|A-QQ^TA \|_2.
 \end{equation}
 
 
 \subsection{Singular value decomposition}
 The singular value decomposition of a matrix $A\in\mathbb R^{m\times n}$ is a factorization of the form
 \begin{equation}
-    A = U\Sigma V^T
+    A = U\Sigma V^T,
 \end{equation}
 where $U$ is an $m \times m$ orthogonal matrix, $\Sigma$ is an $m\times n$ diagonal matrix with non-negative values, called the singular values of $A$, along its diagonal, and $V$ is an $n \times n$ orthogonal matrix. The singular values are ordered such that $\sigma_1\ge\sigma_2\ge\dots\ge\sigma_n$. Every matrix has such a factorization, where $\Sigma$ is uniquely determined, but $U$ and $V$ are not \cite{lay_linear_2022}. The columns of $U$ and $V$ are called the left and right singular vectors of $A$, respectively.
 
@@ -327,6 +327,6 @@ Let $A\in\mathbb R^{m\times n}$ be of rank $k$. The ID of $A$ is a factorizatio
 \begin{equation}
     A = A_{(:,J)}X,
 \end{equation}
-where $J\subset \{1,\dots,n\}$ is an index set of $k$ indices, $A_{(:,J)}$ a matrix made up of the $J$'s columns of $A$, and $X$ a matrix where $X_{(:,J)}=I_k$. See Section 3.2.3 in \cite{halko_finding_2011}.
+where $J\subset \{1,\dots,n\}$ is an index set of $k$ indices, $A_{(:,J)}$ a matrix made up of $J$'s columns of $A$, and $X$ a matrix where $X_{(:,J)}=I_k$. See Section 3.2.3 in \cite{halko_finding_2011}.
 
 \end{document}
