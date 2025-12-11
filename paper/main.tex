@@ -39,7 +39,7 @@
 
 
 \begin{abstract}
-Low-rank matrix approximations are essential in modern applications like scientific computing and data analysis. In recent years the volume of data has seen a rapid increase, resulting in a need for efficient and accurate low-rank approximations. The computation of the singular value decomposition (SVD) is fundamental within low-rank approximations, but is computationally infeasible as the data size increases. Randomized SVD (rSVD) provides an efficient solution, approximating the SVD by first projecting the data onto a low-dimensional space before performing the SVD, significantly reducing the computation time. In this paper we analyze the computation time on data of wide and tall format, comparing the two cases, and analyze the error on matrices with different properties.
+Low-rank matrix approximations are essential in modern applications like scientific computing and data analysis. In recent years the volume of data has seen a rapid increase, resulting in a need for efficient and accurate low-rank approximations. The computation of the singular value decomposition (SVD) is fundamental within low-rank approximations, but is computationally infeasible as the data size increases. Randomized SVD (rSVD) provides an efficient solution, approximating the SVD by first projecting the data onto a low-dimensional space before performing the SVD, significantly reducing the computation time. In this paper we analyze the computation time on data of wide and tall format, comparing the two cases, and analyze the error on matrices with different properties. Our results show that rSVD substantially reduces computation time for large matrices, especially for small target ranks, while achieving good approximation accuracy that depends on the spectral decay of the matrix. We further show that the relative performance on wide versus tall matrices depends on both matrix size and target rank.
 \end{abstract}
 
 
@@ -54,8 +54,6 @@ The rSVD algorithm computes a low-rank approximation of a matrix $A$ by sampling
 
 % The goal of this paper
 In this work, we investigate the trade-offs between the classical SVD and its randomized version. The goal is to compare the computational efficiency and accuracy of the rSVD relative to the SVD on a range of matrix shapes, sizes and spectral decay profiles (the distribution of singular values). We use synthetic test matrices, with a prescribed spectral decay, to investigate the effect on the error of the rSVD against the SVD. In addition, we compare the performance of the rSVD on both tall and wide matrices, evaluating how its efficiency varies with matrix dimensions and target approximation rank.
-
-% Main results TODO: Our experiments show that\dots
 
 
 \section{Theory}\label{sec:theory}
