@@ -127,7 +127,7 @@ where $\sigma_j$ is the $j$th singular value of $A$, $e$ is Euler's constant, an
 
 Noting that $\sigma_j \le \sigma_{k+1}$ for all $j > k + 1$, \eqref{eq:rsvd_error} implies that
 \begin{equation}\label{eq:rsvd_error_simple}
-    \mathbb E\|A - X\|_2 \le \gamma_k \sigma_{k+1}
+    \mathbb E\|A - X\|_2 \le \gamma_k \sigma_{k+1},
 \end{equation}
 where $\gamma_k$ is a constant given by $\gamma_k = (1 + \tfrac{4\sqrt{k+p}}{p-1}\min\{m,n\})$ and $\sigma_{k+1}$ is the ($k+1$)th singular value of $A$.
 
@@ -159,11 +159,12 @@ where the parameter $\alpha$ controls the rate of decay. The condition number is
 In this study, we used the condition numbers $\kappa_1 = 2$, $\kappa_2 = 50$, and $\kappa_3 = 1000$, which corresponds to slow, moderate and a rapid spectral decay (see Fig.~\ref{spectralDecay}). The singular values from \eqref{decay} are placed on the diagonal of $\Sigma$, and the test matrix is the result of $A = U\Sigma V^T$.
 
 The size of the test matrices were set to $n\times 5n$, for the values $n_s=100$, $n_m=500$, and $n_l=1000$, which we refer to as the small, medium and large case, respectively. For each combination of spectral decay (slow, moderate, rapid) and matrix size (small, medium, large), We generated $r$ random samples depending on the size, where $r=30$ for the small case, $r=15$ for the medium case, and $r=5$ for the large case.
+%TODO: Explain that p = 5 and why!
 \input{figures/spectral_decay.tex}
 
 
 \subsection{Computational environment}
-All experiments were performed on a laptop running Fedora Linux 43 with Linux kernel version 6.17. The system was running on an Intel(R) Core(TM) i7-10510U (4 cores, 8 threads) with 16GB of memory. The power-mode was set to `Performance', and the laptop connected to AC.
+All experiments were performed on a laptop running Fedora Linux 43 with Linux kernel version 6.17. The system was running on an Intel(R) Core(TM) i7-10510U (4 cores, 8 threads) with 16GB of memory.
 
 Python 3.13 was used for all computations, together with NumPy and SciPy for linear algebra routines \cite{2020NumPy-Array,2020SciPy-NMeth}. The implementation of Algorithm~\ref{alg:rsvd} was done using the QR and SVD routines provided by SciPy, which were specified to use the GESDD solver for SVD computations. All library specifications and code used to generate the results in this paper is openly available at: \href{https://github.com/EliasSev/randomized-svd-paper}{github.com/EliasSev/randomized-svd-paper}.
 
@@ -188,8 +189,7 @@ To assess the influence of matrix shape, we compared the median computational ti
 
 \subsection{Approximation Error}
 \input{figures/errors_all.tex}
-
-The computation of error is done using the $\ell_2$ operator norm, $\|A - A_k\|_2$, where $A_k$ denotes the rank-$k$ approximation of $A$. For each combination of matrix size and spectral decay profile, the average error is computed across all generated test matrices. Since transposing a matrix does not change its singular values, and since the rSVD produces essentially identical approximations on $A$ and $A^T$, all error analyses are reported for the wide data only. The results are summarized in Fig.~\ref{errorsAll} and Table~\ref{tab:errors}, showing the three spectral decay profiles (slow, moderate, rapid) and the three matrix sizes ($n_s$, $n_m$, $n_l$).
+The computation of error is done using the $\ell_2$ operator norm, $\|A - A_k\|_2$, where $A_k$ denotes the rank-$k$ approximation of $A$. For each combination of matrix size and spectral decay profile, the average error is computed across all generated test matrices. Since transposing a matrix does not change its singular values, and since in our experiments the approximation errors obtained by applying rSVD to $A$ and $A^T$ were numerically identical, all error analyses are reported for the wide data only. The results are summarized in Fig.~\ref{errorsAll} and Table~\ref{tab:errors}, showing the three spectral decay profiles (slow, moderate, rapid) and the three matrix sizes ($n_s$, $n_m$, $n_l$).
 \input{tables/errors.tex}  % TABLE III
 
 
@@ -227,7 +227,7 @@ To understand why the bounds behave this way, it is helpful to investigate the s
     Y = A\Omega,
 \end{equation}
 which forms the sample matrix in Algorithm~\ref{alg:rsvd}. Let $A=U\Sigma V^T$ be the SVD of $A$, and partition $\Sigma$ as $\Sigma = \operatorname{diag}(\Sigma_1, \Sigma_2)$, where $\Sigma_1$ contains the $k+1$ first singular values and $\Sigma_2$ contains the remainder. Correspondingly, partition the right singular vectors as $V = \begin{bmatrix}V_1 & V_2\end{bmatrix}$. Then $A$ can be expressed as
-\begin{equation}
+\begin{equation}\label{eq:Y_partition}
     A =
     U
     \begin{bmatrix}
@@ -248,6 +248,9 @@ Multiplying by the random test matrix $\Omega$ gives
     \end{bmatrix},
 \end{equation}
 where $\Omega_1 = V_1^T\Omega$ and $\Omega_2 = V_2^T\Omega$. Intuitively, $\Sigma_1\Omega_1$ contains the dominant actions of $A$, while $\Sigma_2\Omega_2$ represents perturbation. When the singular values decay slowly, the perturbation $\Sigma_2\Omega_2$ remains relatively large, resulting in a larger upper bound on the expected error. For a more comprehensive discussion of rSVD error bounds, see Chapter 9 of \cite{halko_finding_2011}.
+
+Further, as noted in the Results section, the rSVD approximation errors for $A$ and $A^T$ were numerically identical in our experiments. This can be understood by comparing the random sampling steps $Y = A\Omega$ and $Y' = A\tilde\Omega$. Similarly to Equation~\eqref{eq:rsvd_perturbation}, the actions of $A^T$ is captured in $\Sigma_1\tilde\Omega_1$, where $\tilde\Omega_1 = U_1^T\tilde\Omega$. Hence, for $A^T$, the quality of the reconstruction depends on the sampling of $U$, whereas for $A$ it depends on the sampling of $V$. In our experiments, both $U$ and $V$ were random orthogonal matrices, and therefore the sampling $Y$ and $Y'$ gives numerically identical rank-$k$ approximations using rSVD.
+
 
 
 \subsection{Interpretation of the relative approximation error}
