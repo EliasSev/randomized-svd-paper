@@ -177,7 +177,7 @@ When assessing the effect of the matrix size on the computational time, we compu
 
 
 \subsubsection{Effect of matrix size}
-Fig.~\ref{fig:run_times_absolute} shows the median run times of rSVD as a function of target rank $k$ compared with the median SVD run time. For small matrices ($n_s=100$), rSVD is significantly faster than SVD for small ranks ($k<10$). As $k$ increases, the computational time of rSVD increases rapidly, and SVD is faster when $k$ is greater than 10. For medium ($n_m=500$) and large ($n_l=1000$) matrices, rSVD consistently performs faster than SVD across all ranks used in this study (5 to 50). Speedups between 7 and 32 is seen for large matrices and between 1.5 and 20 for medium matrices. The relative advantage of rSVD over SVD generally increases with the matrix size.
+Fig.~\ref{fig:run_times_absolute} shows the median run times of rSVD as a function of target rank $k$ compared with the median SVD run time, and Table~\ref{tab:times_all} shows the speedup of rSVD compared to SVD. For small matrices ($n_s=100$), rSVD is significantly faster than SVD for small ranks ($k<10$), up to 13 times speedup. As $k$ increases, the computational time of rSVD increases rapidly, and SVD is faster when $k$ is greater than 10. For medium ($n_m=500$) and large ($n_l=1000$) matrices, rSVD consistently performs faster than SVD across all ranks used in this study (5 to 50). Speedups between 7 and 32 is seen for large matrices and between 1.5 and 20 for medium matrices. The relative advantage of rSVD over SVD generally increases with the matrix size.
 
 
 \subsubsection{Effect of matrix shape}
@@ -208,6 +208,9 @@ To assess the effect of matrix size, approximation errors of different matrix si
 \subsection{Interpretation of computational performance}
 % Why large matrices and small k help rSVD
 The results show that rSVD achieves its greatest speedup compared to the SVD on matrices of large size, and this speedup is greatest for small target ranks $k$ (Fig.~\ref{fig:run_times_absolute} and Table~\ref{tab:times_all}). This can be explained by the computational complexity of the rSVD, $\mathcal O(kn^2)$, compared to SVDs complexity of $\mathcal O(n^3)$, assuming a matrix of shape $n\times 5n$. As $k$ approaches $n$, the complexity will be approximately $\mathcal O(n^3)$, and the additional computations in the rSVD are no longer beneficial, as was seen for small matrices with target ranks close to 50.
+
+% Why for small matrices, a sudden increase for rSVD
+For small matrices, rSVD saw a sudden increase in computational runtime (see Table~\ref{tab:times_all}). This behavior may be related to implementation details, such as how the QR decomposition or the SVD within the rSVD algorithm is computed. A possible factor is that the matrix size crossed a threshold causing the computations to no longer fit in the fast CPU cache \cite{lam_cache_1991}. Further profiling would be required to confirm the exact cause.
 
 % Why for small k, wide matrices are best
 Additionally, for small target ranks $k$, rSVD performs faster on wide matrices than on tall matrices. This can be understood by looking at the dominant costs of Algorithm~\ref{alg:rsvd}.
@@ -250,7 +253,6 @@ where $\Omega_1 = V_1^T\Omega$ and $\Omega_2 = V_2^T\Omega$. Intuitively, $\Sigm
 Further, as noted in the Results section, the rSVD approximation errors for $A$ and $A^T$ were numerically identical in our experiments. This can be understood by comparing the random sampling steps $Y = A\Omega$ and $Y' = A\tilde\Omega$. Similarly to Equation~\eqref{eq:rsvd_perturbation}, the actions of $A^T$ is captured in $\Sigma_1\tilde\Omega_1$, where $\tilde\Omega_1 = U_1^T\tilde\Omega$. Hence, for $A^T$, the quality of the reconstruction depends on the sampling of $U$, whereas for $A$ it depends on the sampling of $V$. In our experiments, both $U$ and $V$ were random orthogonal matrices, and therefore the sampling $Y$ and $Y'$ gives numerically identical rank-$k$ approximations using rSVD.
 
 
-
 \subsection{Interpretation of the relative approximation error}
 The relative error between rSVD and the SVD approximation (Fig.~\ref{errorsAll}, bottom row) was largest for small matrices and smallest for large ones. This trend is consistent with Equation~\eqref{eq:rsvd_perturbation}: The perturbation term $\Sigma_{2}\Omega_{2}$ grows with the dimension of $\Omega$, which increases the numerator of the relative error. The denominator, however, is the SVD error $\sigma_{k+1}$, which does not depend on the matrix size. Consequently, as the problem dimension increases, the perturbation grows while the reference error remains fixed, resulting in an increase in the relative error bound, even though the relative error decreases in practice.
 
@@ -282,7 +284,7 @@ Our findings suggest possible improvements of the heuristics in the rSVD impleme
 Limitations of our experiments include the use of synthetic dense matrices, a fixed oversampling parameter, and no power iterations. Future work could explore real-world data, sparse matrices, and alternative algorithms for the rSVD. Overall, rSVD is an effective and computationally efficient alternative to classical SVD in many practical scenarios, especially for low-rank approximations of large matrices.
 
 
-\bibliographystyle{plain}  % or 'unsrt', 'alpha', 'ieeetr', etc.
+\bibliographystyle{plain}
 \bibliography{references}
 
 
