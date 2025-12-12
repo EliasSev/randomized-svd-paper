@@ -137,7 +137,6 @@ The rSVD algorithm consists of two stages. In the first stage, an approximate or
 
 
 \section{Methods}\label{sec:methods}
-\input{figures/run_times_absolute.tex}
 
 
 \subsection{Test matrix generation}
@@ -156,7 +155,6 @@ where the parameter $\alpha$ controls the rate of decay. The condition number is
 In this study, we used the condition numbers $\kappa_1 = 2$, $\kappa_2 = 50$, and $\kappa_3 = 1000$, which corresponds to slow, moderate and a rapid spectral decay (see Fig.~\ref{spectralDecay}). The singular values from Equation~\eqref{decay} are placed on the diagonal of $\Sigma$, and the test matrix is the result of $A = U\Sigma V^T$.
 
 The size of the test matrices were set to $n\times 5n$, for the values $n_s=100$, $n_m=500$, and $n_l=1000$, which we refer to as the small, medium and large case, respectively. For each combination of spectral decay (slow, moderate, rapid) and matrix size (small, medium, large), We generated $r$ random samples depending on the size, where $r=30$ for the small case, $r=15$ for the medium case, and $r=5$ for the large case. In addition, an oversampling parameter of $p=5$ was used for the rSVD in all experiments, as suggested by Halko et al. \cite{halko_finding_2011}.
-\input{figures/spectral_decay.tex}
 
 
 \subsection{Computational environment}
@@ -164,14 +162,18 @@ All experiments were performed on a laptop running Fedora Linux 43 with Linux ke
 
 Python 3.13 was used for all computations, together with NumPy and SciPy for linear algebra routines \cite{2020NumPy-Array,2020SciPy-NMeth}. The implementation of Algorithm~\ref{alg:rsvd} was done using the QR and SVD routines provided by SciPy, which were specified to use the GESDD solver for SVD computations. All library specifications and code used to generate the results in this paper is openly available at: \href{https://github.com/EliasSev/randomized-svd-paper}{github.com/EliasSev/randomized-svd-paper}.
 
+\input{figures/spectral_decay.tex}  % Fig 1
+
 
 \section{Results}\label{sec:results}
-\input{tables/times_all.tex}  % TABLE I
-\input{figures/wide_vs_tall.tex} 
+\input{figures/run_times_absolute.tex}  % Fig 2
+\input{figures/wide_vs_tall.tex}  % Fig 3
 
 
 \subsection{Computational performance}
 When assessing the effect of the matrix size on the computational time, we computed the median value across all test matrices of a given size and across all three spectral decay sets, since the condition number of a dense matrix does not affect the computational cost of the SVD or the QR factorization used in the rSVD \cite{blanchard_2019_nlafet,Buttari_2008}. For each matrix size, we reported the median value over 90 (small), 45 (medium), and 15 (large) trials. The results are presented in Fig.~\ref{fig:run_times_absolute}, and relative runtimes for selected target ranks are listed in Tables~\ref{tab:times_all} and \ref{tab:times_tall_wide}.
+
+\input{tables/times_all.tex}  % TABLE I
 
 
 \subsubsection{Effect of matrix size}
@@ -189,6 +191,7 @@ The approximation error is measured in the $\ell_2$ operator norm, $\|A - A_k\|_
 \input{tables/errors.tex}  % TABLE III
 
 
+\input{figures/expected_error.tex}
 \subsubsection{Effect of spectral decay}
 Fig.~\ref{errorsAll} shows the absolute approximation error (top row) and the relative error of rSVD compared with SVD (bottom row). As expected, the absolute error is largest for matrices with slowly decaying singular values, both for the rSVD and the SVD, with the errors decreasing as $k$ increases. For rapidly decaying spectra, the approximation errors drops much more quickly with increasing rank.
 
@@ -200,7 +203,6 @@ To assess the effect of matrix size, approximation errors of different matrix si
 
 
 \section{Discussion}\label{sec:discussion}
-\input{figures/expected_error.tex}
 
 
 \subsection{Interpretation of computational performance}
