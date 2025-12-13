@@ -142,7 +142,7 @@ The rSVD algorithm consists of two stages. In the first stage, an approximate or
 \subsection{Test matrix generation}
 To compare the performance of the SVD and the rSVD on matrices with different spectral decay profiles, we generated random test matrices $A=U\Sigma V^T$, where $U$ and $V$ are random orthogonal matrices, and $\Sigma$ is a diagonal matrix with prescribed singular values $\{\sigma_1, \dots, \sigma_n\}$.
 
-Each orthogonal matrix was constructed by drawing a random $n\times n$ matrix $\Omega$ with independent elements from the standard normal distribution, performing a QR decomposition $\Omega = \tilde QR$, and correcting the signs of the orthogonal columns with $Q = \tilde Q\Lambda$, where $\Lambda = \operatorname{diag}(\operatorname{sign}(R_{ii}))$, so that the diagonal elements of $R$ are positive. This procedure generated random orthogonal matrices uniformly distributed over the orthogonal group (Haar measure) \cite{mezzadri_how_2007}.
+Each orthogonal matrix was constructed by drawing a random $n\times n$ matrix $\Omega$ with IID elements from the standard normal distribution, performing a QR decomposition $\Omega = \tilde QR$, and correcting the signs of the orthogonal columns with $Q = \tilde Q\Lambda$, where $\Lambda = \operatorname{diag}(\operatorname{sign}(R_{ii}))$, so that the diagonal elements of $R$ are positive. This procedure generated random orthogonal matrices uniformly distributed over the orthogonal group (Haar measure) \cite{mezzadri_how_2007}.
 
 To investigate how spectral decay affects accuracy, three sets of prescribed singular values were used. We used the polynomially decaying sequence of the form
 \begin{equation}\label{decay}
@@ -154,7 +154,7 @@ where the parameter $\alpha$ controls the rate of decay. The condition number is
 \end{equation}
 In this study, we used the condition numbers $\kappa_1 = 2$, $\kappa_2 = 50$, and $\kappa_3 = 1000$, which corresponds to slow, moderate and a rapid spectral decay (see Fig.~\ref{spectralDecay}). The singular values from Equation~\eqref{decay} are placed on the diagonal of $\Sigma$, and the test matrix is the result of $A = U\Sigma V^T$.
 
-The size of the test matrices was set to $n\times 5n$, for the values $n_s=100$, $n_m=500$, and $n_l=1000$, which we refer to as the small, medium and large case, respectively. For each combination of spectral decay (slow, moderate, rapid) and matrix size (small, medium, large), we generated $r$ random samples depending on the size, where $r=30$ for the small case, $r=15$ for the medium case, and $r=5$ for the large case. In addition, an oversampling parameter of $p=5$ was used for the rSVD in all experiments, as suggested by Halko et al. \cite{halko_finding_2011}.
+The size of the test matrices was set to $n\times 5n$, for the values $n_s=100$, $n_m=500$, and $n_l=1000$, which we refer to as the small, medium and large case, respectively. For each combination of spectral decay (slow, moderate, rapid) and matrix size (small, medium, large), we generated $r$ random samples depending on the size, where $r=30$ for the small case, $r=15$ for the medium case, and $r=5$ for the large case. An oversampling parameter of $p=5$ was used for rSVD in all experiments, as suggested by Halko et al.~\cite{halko_finding_2011}. The random matrices $\Omega$ had IID standard normal entries.
 
 
 \subsection{Computational environment}
