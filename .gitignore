@@ -16,9 +16,9 @@ wheels/
 *.fdb_latexmk
 *.fls
 *.log
-*.pdf
 *.gz
 *.out
+paper/*.pdf
 
 .vscode
 *.npy
