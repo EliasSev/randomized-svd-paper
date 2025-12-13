@@ -66,7 +66,7 @@ Consider the goal of finding a rank-$k$ approximation to an $m \times n$ matrix 
 \end{equation}
 where $\| \cdot \|_2$ is the $\ell_2$ operator norm, also known as the spectral norm. Equivalently, every rank-$k$ matrix can be viewed as the projection of $A$ onto a $k$-dimensional subspace of $\mathbb R^m$. 
 
-Let $Q\in\mathbb R^{m\times k}$ have orthonormal columns, i.e. $Q^TQ = I_k$. Then $QQ^TA$ is the orthogonal projection of $A$ onto the $k$-dimensional subspace $\text{span}(Q)$. The problem can also be formulated as
+Let $Q\in\mathbb R^{m\times k}$ have orthonormal columns, i.e., $Q^TQ = I_k$. Then $QQ^TA$ is the orthogonal projection of $A$ onto the $k$-dimensional subspace $\text{span}(Q)$. The problem can also be formulated as
 \begin{equation}\label{probForm2}
     \min_{Q^TQ=I_k} \|A-QQ^TA \|_2.
 \end{equation}
