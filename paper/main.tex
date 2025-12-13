@@ -60,7 +60,7 @@ In this work, we investigate the trade-offs between the classical SVD and its ra
 
 
 \subsection{Problem formulation}
-Consider the goal of finding a rank-$k$ approximation to an $m \times n$ matrix $A$. We are seeking a matrix $X$ with $\text{rank}(X) \le k$ which approximates $A$. The problem formulation is
+Consider the goal of finding a rank-$k$ approximation to an $m \times n$ matrix $A$. We seek a matrix $X$ with $\text{rank}(X) \le k$ which approximates $A$. The problem formulation is
 \begin{equation}\label{probForm1}
     \min_{\text{rank}(X)\le k} \|A - X \|_2,
 \end{equation}
@@ -77,7 +77,7 @@ The singular value decomposition of a matrix $A\in\mathbb R^{m\times n}$ is a fa
 \begin{equation}
     A = U\Sigma V^T,
 \end{equation}
-where $U$ is an $m \times m$ orthogonal matrix, $\Sigma$ is an $m\times n$ diagonal matrix with non-negative values, called the singular values of $A$, and $V$ is an $n \times n$ orthogonal matrix. The singular values are ordered such that $\sigma_1\ge\sigma_2\ge\dots\ge\sigma_n$. Every matrix has such a factorization, where $\Sigma$ is uniquely determined, but $U$ and $V$ are not \cite{lay_linear_2022}. The columns of $U$ and $V$ are called the left and right singular vectors of $A$, respectively.
+where $U$ is an $m \times m$ orthogonal matrix, $\Sigma$ is an $m\times n$ diagonal matrix with non-negative entries, called the singular values of $A$, and $V$ is an $n \times n$ orthogonal matrix. The singular values are ordered such that $\sigma_1\ge\sigma_2\ge\dots\ge\sigma_n$. Every matrix has such a factorization, where $\Sigma$ is uniquely determined, but $U$ and $V$ are not \cite{lay_linear_2022}. The columns of $U$ and $V$ are called the left and right singular vectors of $A$, respectively.
 
 
 \subsection{QR factorization}
@@ -85,11 +85,11 @@ The QR factorization of $A\in\mathbb R^{m\times n}$ is a decomposition
 \begin{equation}
     A = QR,
 \end{equation}
-where $Q\in\mathbb R^{m\times n}$ has orthonormal columns and $R\in\mathbb R^{n\times n}$ is upper-diagonal. The matrix $Q$ forms an orthonormal basis for $\text{range}(A)$, as described in Section 6 of Golub and Van Loan \cite{golub_matrix_1996}. The computation of a QR factorization is done through a series of orthogonal transformations, like Givens rotations or Householder transformations (see Appendix~\ref{A:givens_rotation}, \ref{A:householder_transformation}).
+where $Q\in\mathbb R^{m\times n}$ has orthonormal columns and $R\in\mathbb R^{n\times n}$ is upper triangular. The matrix $Q$ forms an orthonormal basis for $\text{range}(A)$, as described in Section 6 of Golub and Van Loan \cite{golub_matrix_1996}. The computation of a QR factorization is done through a series of orthogonal transformations, like Givens rotations or Householder transformations (see Appendix~\ref{A:givens_rotation}, \ref{A:householder_transformation}).
 
 
 \subsection{Randomized SVD}
-The rSVD is a technique used to approximate the rank-$k$ approximation of an $m\times n$ matrix without computing the SVD. The core idea is to use random sampling to find a low-rank matrix $Q$ which approximates the range of $A$, project $A$ onto $\operatorname{span}(Q)$, and compute the SVD of the projection. The projection $B=Q^TA$ will, with high probability, capture the dominant directions of $A$, and the SVD of $B$ will yield a good approximation \cite{halko_finding_2011}. This procedure is summarized in Algorithm \ref{alg:rsvd}. The construction of an orthonormal basis $Q$ of $Y$ is done through a QR factorization. Note that the approximation $A\approx QQ^T A$ and the approximate factorization $A\approx U\Sigma V^T$ produced by rSVD have the same error. This can be seen by observing that $QQ^TA = QB = Q\tilde U\Sigma V^T$, and setting $U=Q\tilde U$.
+The rSVD is a technique used to compute a rank-$k$ approximation of an $m\times n$ matrix without computing the SVD. The core idea is to use random sampling to find a low-rank matrix $Q$ which approximates the range of $A$, project $A$ onto $\operatorname{span}(Q)$, and compute the SVD of the projection. The projection $B=Q^TA$ will, with high probability, capture the dominant directions of $A$, and the SVD of $B$ will yield a good approximation \cite{halko_finding_2011}. This procedure is summarized in Algorithm \ref{alg:rsvd}. The construction of an orthonormal basis $Q$ of $Y$ is done through a QR factorization. Note that the approximation $A\approx QQ^T A$ and the approximate factorization $A\approx U\Sigma V^T$ produced by rSVD have the same error. This can be seen by observing that $QQ^TA = QB = Q\tilde U\Sigma V^T$, and setting $U=Q\tilde U$.
 \begin{algorithm}[!h]
 \caption{rSVD}
 \label{alg:rsvd}
@@ -107,7 +107,7 @@ The rSVD is a technique used to approximate the rank-$k$ approximation of an $m\
 
 
 \subsection{Error estimates}
-In 1936, C. Eckart and G. Young showed that the solution to Equation~\eqref{probForm1} is $X = U_k\Sigma_k V_k^T$, where $U_k$ and $V_k$ consist of the $k$ first left and right singular vectors of $A$, respectively, and $\Sigma_k$ contains the $k$ first singular values of $A$ \cite{eckart_approximation_1936}. This is known as the Eckart–Young–Mirsky theorem. Alternatively, the solution $Q$ of Equation~\eqref{probForm2} consists of the $k$ first left singular vectors of $A$. This implies that
+In 1936, C. Eckart and G. Young showed that the solution to Equation~\eqref{probForm1} is $X = U_k\Sigma_k V_k^T$, where $U_k$ and $V_k$ consist of the first $k$ left and right singular vectors of $A$, respectively, and $\Sigma_k$ contains the first $k$ singular values of $A$ \cite{eckart_approximation_1936}. This is known as the Eckart–Young–Mirsky theorem. Alternatively, the solution $Q$ of Equation~\eqref{probForm2} consists of the first $k$ left singular vectors of $A$. This implies that
 \begin{equation}\label{eq:svd_error}
     \min_{\text{rank}(X)\le k} \|A - X \|_2 = \sigma_{k+1},
 \end{equation}
@@ -127,7 +127,7 @@ Noting that $\sigma_j \le \sigma_{k+1}$ for all $j > k$, Equation~\eqref{eq:rsvd
 \begin{equation}\label{eq:rsvd_error_simple}
     \mathbb E\|A - X\|_2 \le \gamma_k \sigma_{k+1},
 \end{equation}
-where $\gamma_k$ is a constant given by $\gamma_k = (1 + \tfrac{4\sqrt{k+p}}{p-1}\min\{m,n\})$ and $\sigma_{k+1}$ is the ($k+1$)th singular value of $A$.
+where $\gamma_k$ is a constant given by $\gamma_k = (1 + \tfrac{4\sqrt{k+p}}{p-1}\min\{m,n\})$ and $\sigma_{k+1}$ is the ($k+1$)th singular value of $A$.
 
 
 \subsection{Computational cost}
@@ -152,9 +152,9 @@ where the parameter $\alpha$ controls the rate of decay. The condition number is
 \begin{equation}
     \alpha = \frac{\sqrt{\kappa(n-1)^2}-n+1}{(n-1)^2}.
 \end{equation}
-In this study, we used the condition numbers $\kappa_1 = 2$, $\kappa_2 = 50$, and $\kappa_3 = 1000$, which corresponds to slow, moderate and a rapid spectral decay (see Fig.~\ref{spectralDecay}). The singular values from Equation~\eqref{decay} are placed on the diagonal of $\Sigma$, and the test matrix is the result of $A = U\Sigma V^T$.
+In this study, we used the condition numbers $\kappa_1 = 2$, $\kappa_2 = 50$, and $\kappa_3 = 1000$, which corresponds to slow, moderate, and a rapid spectral decay (see Fig.~\ref{spectralDecay}). The singular values from Equation~\eqref{decay} are placed on the diagonal of $\Sigma$, and the test matrix is the result of $A = U\Sigma V^T$.
 
-The size of the test matrices was set to $n\times 5n$, for the values $n_s=100$, $n_m=500$, and $n_l=1000$, which we refer to as the small, medium and large case, respectively. For each combination of spectral decay (slow, moderate, rapid) and matrix size (small, medium, large), we generated $r$ random samples depending on the size, where $r=30$ for the small case, $r=15$ for the medium case, and $r=5$ for the large case. An oversampling parameter of $p=5$ was used for rSVD in all experiments, as suggested by Halko et al.~\cite{halko_finding_2011}. The random matrices $\Omega$ had IID standard normal entries.
+The size of the test matrices was set to $n\times 5n$, for the values $n_s=100$, $n_m=500$, and $n_l=1000$, which we refer to as the small, medium, and large cases, respectively. For each combination of spectral decay (slow, moderate, rapid) and matrix size (small, medium, large), we generated $r$ random samples depending on the size, where $r=30$ for the small case, $r=15$ for the medium case, and $r=5$ for the large case. An oversampling parameter of $p=5$ was used for rSVD in all experiments, as suggested by Halko et al.~\cite{halko_finding_2011}. The random matrices $\Omega$ had IID standard normal entries.
 
 
 \subsection{Computational environment}
@@ -181,7 +181,7 @@ Fig.~\ref{fig:run_times_absolute} shows the median run times of rSVD as a functi
 
 
 \subsubsection{Effect of matrix shape}
-To assess the influence of matrix shape, we compared the median computational time of rSVD on wide matrices ($t_{wide}$) versus tall matrices ($t_{tall}$) by examining the ratio $t_{wide} / t_{tall}$, see Fig~\ref{wideVsTall} and Table~\ref{tab:times_tall_wide}. For small target ranks, rSVD ran faster on wide matrices across all matrix sizes. The crossover rank, at which rSVD became faster on tall matrices, decreased with increasing matrix size, occurring at ranks 22, 14, and 8, for small, medium, and large matrices, respectively. For small matrices, once this crossover rank was exceeded, the relative advantage of tall matrices grew as $k$ approached 50. For medium matrices, the relative speedup on tall matrices remained approximately constant once the rank surpassed the crossover rank. For large matrices, the advantage of tall matrices diminished once $k$ increased beyond the crossover rank.
+To assess the influence of matrix shape, we compared the median computational time of rSVD on wide matrices ($t_{wide}$) versus tall matrices ($t_{tall}$) by examining the ratio $t_{wide} / t_{tall}$, see Fig.~\ref{wideVsTall} and Table~\ref{tab:times_tall_wide}. For small target ranks, rSVD ran faster on wide matrices across all matrix sizes. The crossover rank, at which rSVD became faster on tall matrices, decreased with increasing matrix size, occurring at ranks 22, 14, and 8, for small, medium, and large matrices, respectively. For small matrices, once this crossover rank was exceeded, the relative advantage of tall matrices grew as $k$ approached 50. For medium matrices, the relative speedup on tall matrices remained approximately constant once the rank surpassed the crossover rank. For large matrices, the advantage of tall matrices diminished once $k$ increased beyond the crossover rank.
 \input{tables/times_tall_wide.tex}  % TABLE II
 
 
@@ -221,7 +221,7 @@ Although the overall cost of Algorithm~\ref{alg:rsvd} scales as $\mathcal O(kmn)
 \subsection{Interpretation of approximation error}
 As shown in Fig.~\ref{errorsAll}, the approximation error of both the rSVD and SVD depends on spectral decay and target rank $k$. Rapidly decaying spectra give low-rank approximations with smaller errors, whereas slowly decaying spectra require much larger $k$ to achieve comparable accuracy. For the truncated SVD, this is a direct result of the Eckart–Young–Mirsky theorem, as expressed in Equation~\eqref{eq:svd_error}. For the rSVD, the error bound in Equation~\eqref{eq:rsvd_error_simple} tells us the same: when the singular values decay slowly, the $\sigma_{k+1}$ term remains large, resulting in a larger theoretical upper bound on the expected approximation error.
 
-Fig.~\ref{expectedError} further shows that the bound in Equation~\eqref{eq:rsvd_error} is highly conservative, especially under slow and moderate spectral decay. The predicted error bound is between one and three orders of magnitude larger than the observed error. For rapidly decaying spectra, the bounds are somewhat tighter, but still overestimates the true error by roughly one order of magnitude. 
+Fig.~\ref{expectedError} further shows that the bound in Equation~\eqref{eq:rsvd_error} is highly conservative, especially under slow and moderate spectral decay. The predicted error bound is between one and three orders of magnitude larger than the observed error. For rapidly decaying spectra, the bounds are somewhat tighter, but still overestimate the true error by roughly one order of magnitude. 
 
 To understand why the bounds behave this way, it is helpful to investigate the structure of
 \begin{equation}
@@ -250,19 +250,19 @@ Multiplying by the random test matrix $\Omega$ gives
 \end{equation}
 where $\Omega_1 = V_1^T\Omega$ and $\Omega_2 = V_2^T\Omega$. Intuitively, $\Sigma_1\Omega_1$ contains the dominant actions of $A$, while $\Sigma_2\Omega_2$ represents perturbation. When the singular values decay slowly, the perturbation $\Sigma_2\Omega_2$ remains relatively large, resulting in a larger upper bound on the expected error. For a more comprehensive discussion of rSVD error bounds, see the discussion in Chapter 9 of Halko et al. \cite{halko_finding_2011}.
 
-Further, as noted in the Results section, the rSVD approximation errors for $A$ and $A^T$ were numerically identical in our experiments. This can be understood by comparing the random sampling steps $Y = A\Omega$ and $Y' = A\tilde\Omega$. Similarly to Equation~\eqref{eq:rsvd_perturbation}, the actions of $A^T$ are captured in $\Sigma_1\tilde\Omega_1$, where $\tilde\Omega_1 = U_1^T\tilde\Omega$. Hence, for $A^T$, the quality of the reconstruction depends on the sampling of $U$, whereas for $A$ it depends on the sampling of $V$. In our experiments, both $U$ and $V$ were random orthogonal matrices, and therefore the sampling $Y$ and $Y'$ gives numerically identical rank-$k$ approximations using rSVD.
+Further, as noted in the Results section, the rSVD approximation errors for $A$ and $A^T$ were numerically identical in our experiments. This can be understood by comparing the random sampling steps $Y = A\Omega$ and $Y' = A\tilde\Omega$. Similarly to Equation~\eqref{eq:rsvd_perturbation}, the actions of $A^T$ are captured in $\Sigma_1\tilde\Omega_1$, where $\tilde\Omega_1 = U_1^T\tilde\Omega$. Hence, for $A^T$, the quality of the reconstruction depends on the sampling of $U$, whereas for $A$ it depends on the sampling of $V$. In our experiments, both $U$ and $V$ were random orthogonal matrices, and therefore the sampling $Y$ and $Y'$ give numerically identical rank-$k$ approximations using rSVD.
 
 
 \subsection{Interpretation of the relative approximation error}
 The relative error between rSVD and the SVD approximation (Fig.~\ref{errorsAll}, bottom row) was largest for small matrices and smallest for large ones. Equation~\eqref{eq:rsvd_perturbation} explains how the corresponding theoretical bound scales with the problem dimension. In particular, the perturbation term $\Sigma_{2}\Omega_{2}$ grows with the dimension of $\Omega$, increasing the numerator of the relative error. The denominator, however, is the SVD error $\sigma_{k+1}$, which does not depend on matrix size. Consequently, as the problem dimension increases, the perturbation grows while the reference error remains fixed, resulting in an increase in the relative error bound, even though the relative error decreases in practice.
 
-Regarding the influence of spectral decay, the experiments showed that a rapid decay gave the highest relative error. This behavior should be interpreted alongside the absolute: although the relative error is greater for rapid decay, the absolute error is the smallest for such spectra. This illustrates how rSVD and truncated SVD both perform best when the dominant amount of actions of $A$ are concentrated in its first few singular vectors, even if small differences appear magnified when expressed relative to the SVD.
+Regarding the influence of spectral decay, the experiments showed that a rapid decay gave the highest relative error. This behavior should be interpreted alongside the absolute: although the relative error is greater for rapid decay, the absolute error is the smallest for such spectra. This illustrates how rSVD and truncated SVD both perform best when the dominant components of $A$ are concentrated in its first few singular vectors, even if small differences appear magnified when expressed relative to the SVD.
 
 
 \subsection{Practical implications}
 The observed performance properties of rSVD have several direct implications for practical use in machine learning and scientific computing. The dependence of computational cost on both the matrix shape and the target rank suggests the choice between SVD and rSVD should not be based solely on matrix size, but rather on the interaction between $k$, $m$, and $n$. In particular, the fact that the matrix shape influences performance shows that transposition strategies used by some libraries can meaningfully affect runtime.
 
-These considerations are reflected partially in the heuristics implemented in Scikit-learn. For example, \texttt{TruncatedSVD} relies on randomized SVD by default, consistent with the common scenario in which only a small number of components is required \cite{sklearn_tsvd}. Likewise, Scikit-learn's \texttt{PCA} defaults to rSVD when the data are sufficiently large and the target dimension is significantly smaller than the matrix dimension \cite{sklearn_pca}. Both these methods rely on Scikit-learn's \texttt{randomized\_svd} \cite{sklearn_randomized_svd}. Notably, this implementation transposes the data when the number of columns exceeds the number of rows. However, our results indicate that this strategy is beneficial only above certain rank thresholds and can be suboptimal for small $k$.
+These considerations are reflected partially in the heuristics implemented in Scikit-learn. For example, \texttt{TruncatedSVD} relies on randomized SVD by default, consistent with the common scenario in which only a small number of components is required \cite{sklearn_tsvd}. Likewise, Scikit-learn's \texttt{PCA} defaults to rSVD when the data are sufficiently large and the target dimension is significantly smaller than the matrix dimension \cite{sklearn_pca}. Both methods rely on Scikit-learn's \texttt{randomized\_svd} \cite{sklearn_randomized_svd}. Notably, this implementation transposes the data when the number of columns exceeds the number of rows. However, our results indicate that this strategy is beneficial only above certain rank thresholds and can be suboptimal for small $k$.
 
 From a user perspective, our findings suggest several guidelines. Randomized SVD is most effective when (i) the matrix size is large, (ii) the target rank is small relative to the matrix dimensions, and (iii) the singular values decay quickly. Deterministic SVD may be preferable for small matrices or when high approximation accuracy is critical. 
 
@@ -278,7 +278,7 @@ Further, Algorithm~\ref{alg:rsvd} may be extended to include power iterations (s
 This work investigated the computational efficiency and approximation accuracy of rSVD relative to the classical SVD across matrices of varying size, shape, and spectral decay. Our results showed that the computational time for rSVD is substantially lower than that of the classical SVD for large matrices, especially for small target ranks. The accuracy of rSVD is largely determined by the spectral decay, where a rapid decay yields better approximations. We also observed that the crossover rank, at which rSVD becomes faster for tall matrices than for wide ones, depends on both matrix size and target rank. Generally, for small target ranks, matrices of wide format are preferred, where this crossover rank was seen to decrease with the size of the matrices. 
 
 % Practical takeaways
-Our findings suggest possible improvements of the heuristics in the rSVD implementation in libraries such as Scikit-learn, which should not only depend on matrix shape, but also the target rank and matrix size. From a user perspective, we saw that rSVD is most effective for small target ranks on large matrices, especially with rapid spectral decays.
+Our findings suggest possible improvements to the heuristics in the rSVD implementation in libraries such as Scikit-learn, which should not only depend on matrix shape, but also the target rank and matrix size. From a user perspective, we saw that rSVD is most effective for small target ranks on large matrices, especially with rapid spectral decays.
 
 % Future work
 Limitations of our experiments include the use of synthetic dense matrices, a fixed oversampling parameter, and no power iterations. Future work could explore real-world data, sparse matrices, and alternative algorithms for the rSVD. Overall, rSVD is an effective and computationally efficient alternative to classical SVD in many practical scenarios, especially for low-rank approximations of large matrices.
@@ -306,7 +306,7 @@ where $\sigma_1$ is the largest singular value of $A$. See Theorem 6 Section 7.
 
 
 \subsection{Givens rotation}\label{A:givens_rotation}
-Givens rotation is a rotation in the plane by an angle $\theta$. The rotation is represented by a matrix of the form
+A Givens rotation is a rotation in the plane by an angle $\theta$. The rotation is represented by a matrix of the form
 \begin{equation}
     G = 
     \begin{bmatrix}
@@ -314,7 +314,7 @@ Givens rotation is a rotation in the plane by an angle $\theta$. The rotation is
     s & c
     \end{bmatrix},
 \end{equation}
-where $c = \cos\theta$ and $s = \sin\theta$. The method is named after Wallace Givens who introduced it in the 1950s. The matrix can be extended to act on rows $i$ and $j$ of a matrix $A$, and used repeatedly to convert a matrix into a lower-triangular form in order to compute a QR factorization, see Section 5.2 of Golub and Van Loan \cite{golub_matrix_1996}.
+where $c = \cos\theta$ and $s = \sin\theta$. The method is named after Wallace Givens who introduced it in the 1950s. The matrix can be extended to act on rows $i$ and $j$ of a matrix $A$, and used repeatedly to convert a matrix into a lower triangular form in order to compute a QR factorization, see Section 5.2 of Golub and Van Loan \cite{golub_matrix_1996}.
 
 
 \subsection{Householder transformation}\label{A:householder_transformation}
@@ -322,7 +322,7 @@ Let $v$ be a normal vector defining a hyperplane $\mathcal H$. The Householder t
 \begin{equation}
     P = I - 2uu^T,\quad u = \frac{v}{\|v\|}.
 \end{equation}
-The transformation was described by Alston S. Householder in a 1958 paper \cite{householder_unitary_1958}. Householder transformations can be used to reduce matrices to bi-diagonal form, or to lower-triangular form as part of a QR factorization, as described in Sections 5.4 and 5.3 of Golub and Van Loan, respectively \cite{golub_matrix_1996}.
+The transformation was described by Alston S. Householder in a 1958 paper \cite{householder_unitary_1958}. Householder transformations can be used to reduce matrices to bi-diagonal form, or to lower triangular form as part of a QR factorization, as described in Sections 5.4 and 5.3 of Golub and Van Loan, respectively \cite{golub_matrix_1996}.
 
 
 \subsection{Interpolative decomposition}\label{A:interpolative_decomposition}
@@ -330,6 +330,6 @@ Let $A\in\mathbb R^{m\times n}$ be of rank $k$. The ID of $A$ is a factorizatio
 \begin{equation}
     A = A_{(:,J)}X,
 \end{equation}
-where $J\subset \{1,\dots,n\}$ is an index set of $k$ indices, $A_{(:,J)}$ a matrix made up of $J$'s columns of $A$, and $X$ a matrix where $X_{(:,J)} = I_k$. See Section 3.2.3 in Halko et al. \cite{halko_finding_2011}.
+where $J\subset \{1,\dots,n\}$ is an index set of $k$ indices, $A_{(:,J)}$ a matrix made up of the columns of $A$ indexed by $J$, and $X$ a matrix where $X_{(:,J)} = I_k$. See Section 3.2.3 in Halko et al. \cite{halko_finding_2011}.
 
 \end{document}
